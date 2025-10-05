@@ -7,6 +7,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Services\TokenService;
 use App\Models\User;
 use App\Supports\Cookies\RefreshCookieFactory;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -25,6 +26,9 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $user = User::create($request->validated());
+
+        event(new Registered($user));
+
         $issued = $this->tokenService->issue($user);
         return response(['access_token' => $issued->accessToken, 'user' => $user->only('id', 'name', 'email')])
             ->withCookie($this->refreshCookie->make($issued->refreshToken));

@@ -1,15 +1,23 @@
 <?php
 
+use App\Http\Controllers\EmailVerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 Route::prefix('v1')->group(function () {
-    Route::post('/auth/register', [AuthController::class, 'register']);
-    Route::post('/auth/login', [AuthController::class, 'login']);
-    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+    Route::prefix('/auth')->controller(AuthController::class)->group(function () {
+        Route::post('/register', 'register');
+        Route::post('/login', 'login')->middleware('verified');
+        Route::post('/refresh', 'refresh');
+    });
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('/verify-email')->controller(EmailVerificationController::class)->group(function () {
+        Route::get('/{id}/{hash}', 'verify')->middleware(['signed','throttle:6,1'])->name('verification.verify');
+        Route::post('/resend', 'resend')->middleware(['auth:sanctum','throttle:6,1']);
+    });
+
+    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
     });
