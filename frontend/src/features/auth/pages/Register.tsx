@@ -9,18 +9,25 @@ import InputField from '@/components/form/InputField.tsx';
 import PasswordField from '@/components/form/PasswordField.tsx';
 import { useZodForm } from '@/hooks/useZodForm.ts';
 
-const LoginSchema = z.object({
-	email: z.email('Invalid email!').trim().toLowerCase().default(''),
-	password: z.string().min(4, 'Password must be at least 4 characters').default('')
-});
+const RegisterSchema = z
+	.object({
+		name: z.string().min(1, 'Name is required!').trim().default(''),
+		email: z.email('Invalid email address!').trim().toLowerCase().default(''),
+		password: z.string().min(4, 'Password must be at least 4 characters').trim().default(''),
+		password_confirmation: z.string().min(4, 'Password must be at least 4 characters').trim().default('')
+	})
+	.refine(data => data.password === data.password_confirmation, {
+		message: 'Passwords do not match',
+		path: ['confirmPassword']
+	});
 
-type LoginValues = z.infer<typeof LoginSchema>;
+type RegisterValues = z.infer<typeof RegisterSchema>;
 
-export default function Login() {
-	const form = useZodForm(LoginSchema);
+export default function Register() {
+	const form = useZodForm(RegisterSchema);
 
-	const onSubmit = async (values: LoginValues) => {
-		console.log('Login with:', values);
+	const onSubmit = async (values: RegisterValues) => {
+		console.log('Register with:', values);
 	};
 
 	return (
@@ -31,24 +38,31 @@ export default function Login() {
 						<FormProvider {...form}>
 							<form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
 								<FieldGroup className="flex flex-col gap-3">
+									<InputField id="name" name="name" label="Name" placeholder="Enter your name" />
 									<InputField id="email" name="email" label="Email" placeholder="Enter your email address" />
 									<PasswordField id="password" name="password" label="Password" placeholder="Enter your password" />
+									<PasswordField
+										id="password_confirmation"
+										name="password_confirmation"
+										label="Confirm Password"
+										placeholder="Enter your confirm password"
+									/>
 									<Button type="submit" className="w-full">
-										Login
+										Register
 									</Button>
 								</FieldGroup>
 
 								<FieldDescription className="text-center text-sm py-1">
-									Don&apos;t have an account?{' '}
-									<Link to="/register" className="underline underline-offset-2">
-										Sign up
+									Already have an account?{' '}
+									<Link to="/login" className="underline underline-offset-2">
+										Sign in
 									</Link>
 								</FieldDescription>
 
-								<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">Or continue with</FieldSeparator>
+								<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">Or</FieldSeparator>
 
 								<Field className="grid grid-cols-2 gap-2 mt-3">
-									<Button className="bg-[#DB4437] hover:bg-[#c33d31] text-white w-full" type="button">
+									<Button className="bg-[#DB4437] hover:bg-[#c33d31] text-white w-full rounded" type="button">
 										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 mr-2">
 											<path
 												fill="currentColor"
@@ -58,7 +72,7 @@ export default function Login() {
 										Google
 									</Button>
 
-									<Button className="bg-[#24292F] hover:bg-[#1c1f23] text-white w-full" type="button">
+									<Button className="bg-[#24292F] hover:bg-[#1c1f23] text-white w-full rounded" type="button">
 										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 mr-2">
 											<path
 												fill="currentColor"
