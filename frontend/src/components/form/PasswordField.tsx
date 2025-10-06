@@ -21,7 +21,9 @@ export default function PasswordField({ id, name, label, ...props }: PasswordFie
 
 	return (
 		<Field className="gap-2">
-			<FieldLabel htmlFor={id}>{label}</FieldLabel>
+			<FieldLabel className={cn(hasError && 'text-red-500')} htmlFor={id}>
+				{label}
+			</FieldLabel>
 			<div className="relative">
 				<Input
 					id={id}
@@ -43,7 +45,7 @@ export default function PasswordField({ id, name, label, ...props }: PasswordFie
 					type="button"
 					className={cn(
 						'absolute inset-y-0 right-2 my-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent',
-						hasError && 'text-red-600'
+						hasError && 'text-red-600 hover:text-red-400'
 					)}
 					onClick={() => setShow(show => !show)}
 				>

@@ -17,8 +17,10 @@ export default function InputField({ id, name, label, ...props }: InputFieldProp
 	const hasError = Boolean(errors[fieldName]);
 
 	return (
-		<Field>
-			<FieldLabel htmlFor={id}>{label}</FieldLabel>
+		<Field className="gap-2">
+			<FieldLabel className={cn(hasError && 'text-red-500')} htmlFor={id}>
+				{label}
+			</FieldLabel>
 			<Input
 				id={id}
 				{...register(fieldName)}
@@ -33,7 +35,7 @@ export default function InputField({ id, name, label, ...props }: InputFieldProp
 					]
 				)}
 			/>
-			{errors[fieldName] && <p className="mt-1 text-sm text-red-500">{String(errors[fieldName].message)}</p>}
+			{errors[fieldName] && <p className="text-sm text-red-500">{String(errors[fieldName].message)}</p>}
 		</Field>
 	);
 }

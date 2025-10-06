@@ -29,13 +29,20 @@ export default function Login() {
 					<CardContent className="p-6">
 						<FormProvider {...form}>
 							<form className="flex flex-col gap-6" onSubmit={form.handleSubmit(onSubmit)}>
-								<FieldGroup className="flex flex-col gap-4">
+								<FieldGroup className="flex flex-col gap-3">
 									<InputField id="email" name="email" label="Email" placeholder="Enter your email address" />
 									<PasswordField id="password" name="password" label="Password" placeholder="Enter your password" />
 									<Button type="submit" className="w-full">
 										Login
 									</Button>
 								</FieldGroup>
+
+								<FieldDescription className="text-center text-sm">
+									Don&apos;t have an account?{' '}
+									<a href="#" className="underline underline-offset-2">
+										Sign up
+									</a>
+								</FieldDescription>
 
 								<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">Or continue with</FieldSeparator>
 
@@ -60,13 +67,6 @@ export default function Login() {
 										GitHub
 									</Button>
 								</Field>
-
-								<FieldDescription className="text-center text-sm">
-									Don&apos;t have an account?{' '}
-									<a href="#" className="underline underline-offset-2">
-										Sign up
-									</a>
-								</FieldDescription>
 							</form>
 						</FormProvider>
 					</CardContent>
