@@ -1,100 +1,76 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Field, FieldDescription, FieldGroup, FieldSeparator } from '@/components/ui/field';
 
-import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProvider } from 'react-hook-form';
+import InputField from '@/components/form/InputField.tsx';
+import PasswordField from '@/components/form/PasswordField.tsx';
+import { useZodForm } from '@/hooks/useZodForm.ts';
 
 const LoginSchema = z.object({
-	email: z.string().trim().toLowerCase().email('Email không hợp lệ'),
-	password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự').max(128, 'Mật khẩu quá dài')
+	email: z.email('Email không hợp lệ').trim().toLowerCase().default(''),
+	password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự').max(128, 'Mật khẩu quá dài').default('')
 });
 
 type LoginValues = z.infer<typeof LoginSchema>;
 
 export default function Login() {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors, isSubmitting }
-	} = useForm<LoginValues>({
-		resolver: zodResolver(LoginSchema),
-		defaultValues: { email: '', password: '' },
-		mode: 'onSubmit' // có thể dùng 'onChange' hoặc 'onBlur' nếu muốn
-	});
+	const form = useZodForm(LoginSchema);
 
 	const onSubmit = async (values: LoginValues) => {
 		console.log('Login with:', values);
 	};
 
 	return (
-		<div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+		<div className="bg-muted flex min-h-svh flex-col items-center justify-center px-4 py-8 md:px-10">
 			<div className="w-full max-w-sm">
-				<div className="flex flex-col gap-6">
-					<Card className="overflow-hidden p-0">
-						<CardContent className="grid p-0">
-							<form className="p-4" onSubmit={handleSubmit(onSubmit)}>
-								<FieldGroup className="gap-3">
-									<div className="flex flex-col items-center gap-2 text-center">
-										<h1 className="text-2xl font-bold">Welcome back</h1>
-										<p className="text-muted-foreground text-balance">Login to your Acme Inc account</p>
-									</div>
-									<Field>
-										<FieldLabel htmlFor="email">Email</FieldLabel>
-										<Input id="email" placeholder="m@example.com" required />
-									</Field>
-									<Field>
-										<div className="flex items-center">
-											<FieldLabel htmlFor="password">Password</FieldLabel>
-											<a href="#" className="ml-auto text-sm underline-offset-2 hover:underline">
-												Forgot your password?
-											</a>
-										</div>
-										<Input id="password" type="password" required />
-									</Field>
-									<Field>
-										<Button type="submit">Login</Button>
-									</Field>
-									<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">Or continue with</FieldSeparator>
-									<Field className="grid grid-cols-3 gap-4">
-										<Button variant="outline" type="button">
-											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-												<path
-													d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-													fill="currentColor"
-												/>
-											</svg>
-											<span className="sr-only">Login with Apple</span>
-										</Button>
-										<Button variant="outline" type="button">
-											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-												<path
-													d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-													fill="currentColor"
-												/>
-											</svg>
-											<span className="sr-only">Login with Google</span>
-										</Button>
-										<Button variant="outline" type="button">
-											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-												<path
-													d="M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303zm10.16 2.053c1.147 0 2.188.758 2.992 1.999 1.132 1.748 1.647 4.195 1.647 6.4 0 1.548-.368 2.9-1.839 2.9-.58 0-1.027-.23-1.664-1.004-.496-.601-1.343-1.878-2.832-4.358l-.617-1.028a44.908 44.908 0 0 0-1.255-1.98c.07-.109.141-.224.211-.327 1.12-1.667 2.118-2.602 3.358-2.602zm-10.201.553c1.265 0 2.058.791 2.675 1.446.307.327.737.871 1.234 1.579l-1.02 1.566c-.757 1.163-1.882 3.017-2.837 4.338-1.191 1.649-1.81 1.817-2.486 1.817-.524 0-1.038-.237-1.383-.794-.263-.426-.464-1.13-.464-2.046 0-2.221.63-4.535 1.66-6.088.454-.687.964-1.226 1.533-1.533a2.264 2.264 0 0 1 1.088-.285z"
-													fill="currentColor"
-												/>
-											</svg>
-											<span className="sr-only">Login with Meta</span>
-										</Button>
-									</Field>
-									<FieldDescription className="text-center">
-										Don&apos;t have an account? <a href="#">Sign up</a>
-									</FieldDescription>
+				<Card>
+					<CardContent className="p-6">
+						<FormProvider {...form}>
+							<form className="flex flex-col gap-6" onSubmit={form.handleSubmit(onSubmit)}>
+								<FieldGroup className="flex flex-col gap-4">
+									<InputField id="email" name="email" label="Email" placeholder="Enter your email address" />
+									<PasswordField id="password" name="password" label="Password" placeholder="Enter your password" />
+									<Button type="submit" className="w-full">
+										Login
+									</Button>
 								</FieldGroup>
+
+								<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">Or continue with</FieldSeparator>
+
+								<Field className="grid grid-cols-2 gap-3">
+									<Button className="bg-[#DB4437] hover:bg-[#c33d31] text-white w-full" type="button">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 mr-2">
+											<path
+												fill="currentColor"
+												d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+											/>
+										</svg>
+										Google
+									</Button>
+
+									<Button className="bg-[#24292F] hover:bg-[#1c1f23] text-white w-full" type="button">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 mr-2">
+											<path
+												fill="currentColor"
+												d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.29 9.41 7.86 10.95.58.11.79-.25.79-.55v-2.15c-3.2.69-3.87-1.54-3.87-1.54-.53-1.33-1.29-1.69-1.29-1.69-1.06-.73.08-.72.08-.72 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.73 1.26 3.39.96.11-.76.41-1.26.75-1.55-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.47.11-3.07 0 0 .97-.31 3.18 1.18a11.2 11.2 0 0 1 5.8 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.6.23 2.78.11 3.07.74.81 1.19 1.83 1.19 3.09 0 4.42-2.68 5.39-5.23 5.68.42.36.8 1.09.8 2.21v3.28c0 .3.21.66.8.55A11.51 11.51 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5z"
+											/>
+										</svg>
+										GitHub
+									</Button>
+								</Field>
+
+								<FieldDescription className="text-center text-sm">
+									Don&apos;t have an account?{' '}
+									<a href="#" className="underline underline-offset-2">
+										Sign up
+									</a>
+								</FieldDescription>
 							</form>
-						</CardContent>
-					</Card>
-				</div>
+						</FormProvider>
+					</CardContent>
+				</Card>
 			</div>
 		</div>
 	);
