@@ -10,11 +10,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/register', 'register');
         Route::post('/login', 'login')->middleware('verified');
         Route::post('/refresh', 'refresh');
-    });
-
-    Route::prefix('/auth/verify-email')->controller(EmailVerificationController::class)->group(function () {
-        Route::get('/{id}/{hash}', 'verify')->middleware(['signed','throttle:6,1'])->name('verification.verify');
-        Route::post('/resend', 'resend')->middleware(['auth:sanctum','throttle:6,1']);
+        Route::prefix('/verify-email')->controller(EmailVerificationController::class)->group(function () {
+            Route::get('/{id}/{hash}', 'verify')->middleware(['signed','throttle:6,1'])->name('verification.verify');
+            Route::post('/resend', 'resend')->middleware(['throttle:6,1']);
+        });
     });
 
     Route::middleware(['auth:sanctum', 'verified'])->group(function () {
