@@ -48,6 +48,7 @@ export default function PasswordField({ id, name, label, ...props }: PasswordFie
 						hasError && 'text-red-600 hover:text-red-400'
 					)}
 					onClick={() => setShow(show => !show)}
+					tabIndex={-1}
 				>
 					{show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
 				</Button>

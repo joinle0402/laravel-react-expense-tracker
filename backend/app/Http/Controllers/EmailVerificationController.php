@@ -14,9 +14,11 @@ class EmailVerificationController extends Controller
      */
     public function resend(Request $request)
     {
-        assert_if($request->user()->hasVerifiedEmail(), "Email already verified", 200);
-        $request->user()->sendEmailVerificationNotification();
-        return response()->json(['message' => 'Verification link sent']);
+        $request->validate(['email' => 'required|email']);
+        $user = User::where('email', $request->email)->firstOrFail();
+        assert_if($user->hasVerifiedEmail(), "Email already verified", 200);
+        $user->sendEmailVerificationNotification();
+        return response()->json(['message' => 'Đã gửi lại email xác minh']);
     }
 
     /**

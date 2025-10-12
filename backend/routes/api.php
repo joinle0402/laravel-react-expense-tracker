@@ -12,7 +12,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/refresh', 'refresh');
     });
 
-    Route::prefix('/verify-email')->controller(EmailVerificationController::class)->group(function () {
+    Route::prefix('/auth/verify-email')->controller(EmailVerificationController::class)->group(function () {
         Route::get('/{id}/{hash}', 'verify')->middleware(['signed','throttle:6,1'])->name('verification.verify');
         Route::post('/resend', 'resend')->middleware(['auth:sanctum','throttle:6,1']);
     });

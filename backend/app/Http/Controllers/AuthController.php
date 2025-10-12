@@ -26,12 +26,11 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $user = User::create($request->validated());
-
         event(new Registered($user));
-
-        $issued = $this->tokenService->issue($user);
-        return response(['access_token' => $issued->accessToken, 'user' => $user->only('id', 'name', 'email')])
-            ->withCookie($this->refreshCookie->make($issued->refreshToken));
+        return response([
+            'message' => 'Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư của bạn.',
+            'data' => array_merge($user->only('id', 'name', 'email'), ['verified' => false])
+        ]);
     }
 
     /**

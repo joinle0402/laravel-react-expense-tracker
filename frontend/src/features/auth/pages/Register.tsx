@@ -1,33 +1,57 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Field, FieldDescription, FieldGroup, FieldSeparator } from '@/components/ui/field';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { z } from 'zod';
 import { FormProvider } from 'react-hook-form';
 import InputField from '@/components/form/InputField.tsx';
 import PasswordField from '@/components/form/PasswordField.tsx';
 import { useZodForm } from '@/hooks/useZodForm.ts';
+import { z } from 'zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { register } from '@/features/auth/auth.service.ts';
 
-const RegisterSchema = z
+const schema = z
 	.object({
-		name: z.string().min(1, 'Name is required!').trim().default(''),
-		email: z.email('Invalid email address!').trim().toLowerCase().default(''),
-		password: z.string().min(4, 'Password must be at least 4 characters').trim().default(''),
-		password_confirmation: z.string().min(4, 'Password must be at least 4 characters').trim().default('')
+		email: z.email('Email không hợp lệ').default(''),
+		name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự').max(100, 'Tên quá dài').default(''),
+		password: z.string().min(4, 'Mật khẩu tối thiểu 4 ký tự').max(128, 'Mật khẩu quá dài').default(''),
+		password_confirmation: z.string().min(4, 'Mật khẩu tối thiểu 4 ký tự').max(128, 'Mật khẩu quá dài').default('')
 	})
 	.refine(data => data.password === data.password_confirmation, {
-		message: 'Passwords do not match',
-		path: ['confirmPassword']
+		message: 'Mật khẩu xác nhận không khớp',
+		path: ['password_confirmation']
 	});
 
-type RegisterValues = z.infer<typeof RegisterSchema>;
+export type RegisterForm = z.infer<typeof schema>;
 
 export default function Register() {
-	const form = useZodForm(RegisterSchema);
+	const form = useZodForm(schema);
+	const { mutateAsync, isPending } = useMutation({ mutationFn: register });
+	const isSubmitting = form.formState.isSubmitting || isPending;
+	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 
-	const onSubmit = async (values: RegisterValues) => {
-		console.log('Register with:', values);
+	const onSubmit = async (formValues: RegisterForm) => {
+		try {
+			const response = await mutateAsync(formValues);
+			toast.success(response.message);
+			form.reset();
+			queryClient.setQueryData(['auth', 'me'], response.data);
+			localStorage.setItem('verify_email', response.data.email);
+			navigate('/verify-email-pendding', { replace: true });
+		} catch (error) {
+			if (isAxiosError(error) && error?.response?.data?.errors) {
+				Object.entries(error?.response?.data?.errors).forEach(([name, message]) => {
+					form.setError(name as any, { type: 'server', message: String(message) });
+				});
+				return;
+			}
+			console.log(error);
+		}
 	};
 
 	return (
@@ -37,7 +61,7 @@ export default function Register() {
 					<CardContent className="p-6">
 						<FormProvider {...form}>
 							<form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
-								<FieldGroup className="flex flex-col gap-3">
+								<FieldGroup className="flex flex-col gap-2">
 									<InputField id="name" name="name" label="Name" placeholder="Enter your name" />
 									<InputField id="email" name="email" label="Email" placeholder="Enter your email address" />
 									<PasswordField id="password" name="password" label="Password" placeholder="Enter your password" />
@@ -47,8 +71,9 @@ export default function Register() {
 										label="Confirm Password"
 										placeholder="Enter your confirm password"
 									/>
-									<Button type="submit" className="w-full">
-										Register
+									<Button type="submit" className="w-full mt-1" disabled={isSubmitting} aria-busy={isSubmitting}>
+										{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+										{isSubmitting ? 'Đang gửi...' : 'Đăng ký'}
 									</Button>
 								</FieldGroup>
 

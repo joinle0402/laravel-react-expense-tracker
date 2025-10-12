@@ -3,23 +3,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Field, FieldDescription, FieldGroup, FieldSeparator } from '@/components/ui/field';
 import { Link } from 'react-router-dom';
 
-import { z } from 'zod';
 import { FormProvider } from 'react-hook-form';
 import InputField from '@/components/form/InputField.tsx';
 import PasswordField from '@/components/form/PasswordField.tsx';
 import { useZodForm } from '@/hooks/useZodForm.ts';
-
-const LoginSchema = z.object({
-	email: z.email('Invalid email!').trim().toLowerCase().default(''),
-	password: z.string().min(4, 'Password must be at least 4 characters').default('')
-});
-
-type LoginValues = z.infer<typeof LoginSchema>;
+import { type LoginPayload, LoginSchema } from '@/features/auth/auth.schema.ts';
 
 export default function Login() {
 	const form = useZodForm(LoginSchema);
 
-	const onSubmit = async (values: LoginValues) => {
+	const onSubmit = async (values: LoginPayload) => {
 		console.log('Login with:', values);
 	};
 

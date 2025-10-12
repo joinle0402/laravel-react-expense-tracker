@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from '@/pages/Home';
 import Login from '@/features/auth/pages/Login.tsx';
 import Register from '@/features/auth/pages/Register.tsx';
+import VerifyEmailPending from '@/features/auth/pages/VerifyEmailPending.tsx';
 
 export default function App() {
 	return (
@@ -9,6 +10,7 @@ export default function App() {
 			<Route path="/" element={<Home />} />
 			<Route path="/login" element={<Login />} />
 			<Route path="/register" element={<Register />} />
+			<Route path="/verify-email-pendding" element={<VerifyEmailPending />} />
 			<Route path="*" element={<Navigate to="/login" />} />
 		</Routes>
 	);
