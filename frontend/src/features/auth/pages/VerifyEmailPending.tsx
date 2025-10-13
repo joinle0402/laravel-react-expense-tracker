@@ -4,13 +4,14 @@ import { me, resend } from '@/features/auth/auth.service.ts';
 import type { User } from '@/features/auth/auth.model.ts';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.tsx';
+import { queryKeys } from '@/lib/queryKeys.ts';
 
 export default function VerifyEmailPending() {
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery({
-		queryKey: ['auth', 'me'],
+		queryKey: queryKeys.me,
 		queryFn: me,
-		placeholderData: queryClient.getQueryData<User>(['auth', 'me']),
+		placeholderData: queryClient.getQueryData<User>(queryKeys.me),
 		refetchOnWindowFocus: false,
 		enabled: false
 	});

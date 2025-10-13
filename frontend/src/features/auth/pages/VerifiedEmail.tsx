@@ -2,6 +2,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { queryKeys } from '@/lib/queryKeys.ts';
 
 export default function VerifiedEmail() {
 	const [params] = useSearchParams();
@@ -10,7 +11,7 @@ export default function VerifiedEmail() {
 
 	useEffect(() => {
 		toast.success(params.get('message') ?? 'Email xác thực thành công!');
-		queryClient.invalidateQueries({ queryKey: ['auth', 'me'] }).then();
+		queryClient.invalidateQueries({ queryKey: queryKeys.me }).then();
 		localStorage.removeItem('verify_email');
 		navigate('/admin/dashboard', { replace: true });
 	}, []);

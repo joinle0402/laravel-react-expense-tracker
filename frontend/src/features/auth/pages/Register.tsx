@@ -13,6 +13,7 @@ import { isAxiosError } from 'axios';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { register } from '@/features/auth/auth.service.ts';
+import { queryKeys } from '@/lib/queryKeys.ts';
 
 const schema = z
 	.object({
@@ -21,7 +22,7 @@ const schema = z
 		password: z.string().min(4, 'Mật khẩu tối thiểu 4 ký tự').max(128, 'Mật khẩu quá dài').default(''),
 		password_confirmation: z.string().min(4, 'Mật khẩu tối thiểu 4 ký tự').max(128, 'Mật khẩu quá dài').default('')
 	})
-	.refine(data => data.password === data.password_confirmation, {
+	.refine((data) => data.password === data.password_confirmation, {
 		message: 'Mật khẩu xác nhận không khớp',
 		path: ['password_confirmation']
 	});
@@ -40,7 +41,7 @@ export default function Register() {
 			const response = await mutateAsync(formValues);
 			toast.success(response.message);
 			form.reset();
-			queryClient.setQueryData(['auth', 'me'], response.data);
+			queryClient.setQueryData(queryKeys.me, response.data);
 			localStorage.setItem('verify_email', response.data.email);
 			navigate('/verify-email-pendding', { replace: true });
 		} catch (error) {
