@@ -8,5 +8,5 @@ export function ProtectedRoute() {
 	if (loading) return <LoadingScreen />;
 	if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
 	if (!user.verified && location.pathname !== '/verify-email-pending') return <Navigate to="/verify-email-pending" replace />;
-	return <Outlet />;
+	return <Outlet context={{ user }} />;
 }

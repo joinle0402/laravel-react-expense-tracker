@@ -1,4 +1,4 @@
-import { Calendar, ChevronUp, Home, Inbox, Search, Settings, User2 } from 'lucide-react';
+import { Calendar, ChevronUp, Home, Inbox, PiggyBank, Search, Settings, User2 } from 'lucide-react';
 import {
 	Sidebar,
 	SidebarContent,
@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/sidebar';
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import useAuthenticated from '@/features/auth/hooks/useAuthenticated.ts';
+import useLogout from '@/features/auth/hooks/useLogout';
 
 const items = [
 	{
@@ -43,11 +45,17 @@ const items = [
 ];
 
 export default function AppSidebar() {
+	const { user } = useAuthenticated();
+	const { mutate: logout, isPending } = useLogout();
+
 	return (
 		<Sidebar>
 			<SidebarHeader>
 				<SidebarMenu>
-					<SidebarMenuButton>Expense Tracker</SidebarMenuButton>
+					<SidebarMenuButton>
+						<PiggyBank />
+						Expense Tracker
+					</SidebarMenuButton>
 				</SidebarMenu>
 			</SidebarHeader>
 
@@ -76,8 +84,9 @@ export default function AppSidebar() {
 					<SidebarMenuItem>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-									<User2 /> Username
+								<SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground truncate">
+									<User2 />
+									<span className="text-xs text-muted-foreground truncate max-w-[180px]">{user.email}</span>
 									<ChevronUp className="ml-auto" />
 								</SidebarMenuButton>
 							</DropdownMenuTrigger>
@@ -87,9 +96,12 @@ export default function AppSidebar() {
 								sideOffset={6}
 								className="z-50 w-[--radix-dropdown-menu-trigger-width] min-w-44"
 							>
-								<DropdownMenuItem>Account</DropdownMenuItem>
-								<DropdownMenuItem>Billing</DropdownMenuItem>
-								<DropdownMenuItem>Sign out</DropdownMenuItem>
+								<DropdownMenuItem>Thông tin người dùng</DropdownMenuItem>
+								<DropdownMenuItem asChild>
+									<SidebarMenuButton onClick={() => logout()} disabled={isPending}>
+										{isPending ? 'Đang đăng xuất…' : 'Đăng xuất'}
+									</SidebarMenuButton>
+								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</SidebarMenuItem>

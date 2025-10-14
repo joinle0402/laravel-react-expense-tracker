@@ -30,7 +30,8 @@ client.interceptors.response.use(
 	(response) => response,
 	async (error: AxiosError) => {
 		const original = error.config as InternalAxiosRequestConfig | undefined;
-		if (!original || error.response?.status != 401) {
+		const skip = original?.url?.includes('/logout') || original?.url?.includes('/refresh');
+		if (!original || error.response?.status != 401 || skip) {
 			return Promise.reject(error);
 		}
 
