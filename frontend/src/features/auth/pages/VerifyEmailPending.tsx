@@ -1,21 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { me, resend } from '@/features/auth/auth.service.ts';
-import type { User } from '@/features/auth/auth.model.ts';
+import { useMutation } from '@tanstack/react-query';
+import { resend } from '@/features/auth/auth.service.ts';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.tsx';
-import { queryKeys } from '@/lib/queryKeys.ts';
+import { useAuth } from '@/features/auth/auth.context.tsx';
 
 export default function VerifyEmailPending() {
-	const queryClient = useQueryClient();
-	const { data: user } = useQuery({
-		queryKey: queryKeys.me,
-		queryFn: me,
-		placeholderData: queryClient.getQueryData<User>(queryKeys.me),
-		refetchOnWindowFocus: false,
-		enabled: false
-	});
-	const email = (user?.email || localStorage.getItem('verify_email')) ?? '';
+	const { user } = useAuth();
+	const email = user?.email;
 	const resendMutation = useMutation({
 		mutationFn: resend,
 		onSuccess: (response) => {
@@ -31,7 +23,7 @@ export default function VerifyEmailPending() {
 		<div className="mx-auto max-w-md p-4">
 			<Card className="shadow-xl">
 				<CardHeader>
-					<CardTitle className="mb-1.5 text-2xl">Verify your email</CardTitle>
+					<CardTitle className="mb-1.5 text-2xl">Xác thực địa chỉ email</CardTitle>
 					<CardDescription className="text-base">
 						Một liên kết kích hoạt đã được gửi đến địa chỉ email của bạn: <span className="font-medium">{email}</span>. Vui lòng kiểm tra
 						hộp thư đến và nhấp vào liên kết để hoàn tất quy trình kích hoạt.

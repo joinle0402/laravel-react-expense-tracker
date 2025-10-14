@@ -1,9 +1,14 @@
 import { http } from '@/lib/http.ts';
-import type { ApiResponse, User } from '@/features/auth/auth.model.ts';
+import type { ApiResponse, AuthResponse, User } from '@/features/auth/auth.model.ts';
 import type { RegisterForm } from '@/features/auth/pages/Register.tsx';
+import type { LoginForm } from '@/features/auth/pages/Login.tsx';
 
 export async function me() {
 	return await http.get<User>('/auth/me');
+}
+
+export async function login(payload: LoginForm) {
+	return await http.post<ApiResponse<AuthResponse>, LoginForm>('/auth/login', payload);
 }
 
 export async function register(payload: RegisterForm) {

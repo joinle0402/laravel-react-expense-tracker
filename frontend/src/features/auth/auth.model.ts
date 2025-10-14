@@ -2,7 +2,8 @@ export interface User {
 	id: string;
 	name: string;
 	email: string;
-	verified: string;
+	email_verified_at: string;
+	verified: boolean;
 }
 
 export interface AuthResponse {

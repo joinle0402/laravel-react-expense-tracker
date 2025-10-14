@@ -43,14 +43,16 @@ class AuthController extends Controller
 
         $this->tokenService->revokeByUserAgent($user, request()->userAgent());
         $issued = $this->tokenService->issue($user);
-
-        return response(['access_token' => $issued->accessToken, 'user' => $user->only('id', 'name', 'email')])
-                ->withCookie($this->refreshCookie->make($issued->refreshToken));
+        return response([
+                'message' => 'Đăng nhập tài khoản thành công!',
+                'data' => ['access_token' => $issued->accessToken, 'user' => $user]
+            ])
+            ->withCookie($this->refreshCookie->make($issued->refreshToken));
     }
 
     public function me(Request $request)
     {
-        return response(['user' => $request->user()->only('id', 'name', 'email')]);
+        return $request->user();
     }
 
     public function logout(Request $request)

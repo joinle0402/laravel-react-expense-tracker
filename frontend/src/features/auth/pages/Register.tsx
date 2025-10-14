@@ -43,7 +43,7 @@ export default function Register() {
 			form.reset();
 			queryClient.setQueryData(queryKeys.me, response.data);
 			localStorage.setItem('verify_email', response.data.email);
-			navigate('/verify-email-pendding', { replace: true });
+			navigate('/verify-email-pending', { replace: true });
 		} catch (error) {
 			if (isAxiosError(error) && error?.response?.data?.errors) {
 				Object.entries(error?.response?.data?.errors).forEach(([name, message]) => {

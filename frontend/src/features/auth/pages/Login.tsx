@@ -7,13 +7,37 @@ import { FormProvider } from 'react-hook-form';
 import InputField from '@/components/form/InputField.tsx';
 import PasswordField from '@/components/form/PasswordField.tsx';
 import { useZodForm } from '@/hooks/useZodForm.ts';
-import { type LoginPayload, LoginSchema } from '@/features/auth/auth.schema.ts';
+import { z } from 'zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { login } from '@/features/auth/auth.service.ts';
+import { Loader2 } from 'lucide-react';
+import { queryKeys } from '@/lib/queryKeys.ts';
+import { tokenStore } from '@/lib/storage.ts';
+import { toast } from 'sonner';
+
+const LoginSchema = z.object({
+	email: z.email('Email không hợp lệ').default(''),
+	password: z.string().min(4, 'Mật khẩu tối thiểu 4 ký tự').max(128, 'Mật khẩu quá dài').default('')
+});
+
+export type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
+	const queryClient = useQueryClient();
 	const form = useZodForm(LoginSchema);
+	const { mutateAsync, isPending } = useMutation({ mutationFn: login });
+	const isSubmitting = form.formState.isSubmitting || isPending;
 
-	const onSubmit = async (values: LoginPayload) => {
-		console.log('Login with:', values);
+	const onSubmit = async (form: LoginForm) => {
+		try {
+			const response = await mutateAsync(form);
+			toast.success(response.message);
+			tokenStore.access = response.data.access_token;
+			queryClient.setQueryData(queryKeys.me, response.data.user);
+			await queryClient.invalidateQueries({ queryKey: queryKeys.me });
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
@@ -26,8 +50,9 @@ export default function Login() {
 								<FieldGroup className="flex flex-col gap-3">
 									<InputField id="email" name="email" label="Email" placeholder="Enter your email address" />
 									<PasswordField id="password" name="password" label="Password" placeholder="Enter your password" />
-									<Button type="submit" className="w-full">
-										Login
+									<Button type="submit" className="w-full mt-1" disabled={isSubmitting} aria-busy={isSubmitting}>
+										{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+										{isSubmitting ? 'Đang gửi...' : 'Đăng ký'}
 									</Button>
 								</FieldGroup>
 
