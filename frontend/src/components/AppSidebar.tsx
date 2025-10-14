@@ -1,4 +1,4 @@
-import { Calendar, ChevronUp, Home, Inbox, PiggyBank, Search, Settings, User2 } from 'lucide-react';
+import { ChevronUp, PiggyBank, User2 } from 'lucide-react';
 import {
 	Sidebar,
 	SidebarContent,
@@ -15,62 +15,47 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useAuthenticated from '@/features/auth/hooks/useAuthenticated.ts';
 import useLogout from '@/features/auth/hooks/useLogout';
-
-const items = [
-	{
-		title: 'Home',
-		url: '#',
-		icon: Home
-	},
-	{
-		title: 'Inbox',
-		url: '#',
-		icon: Inbox
-	},
-	{
-		title: 'Calendar',
-		url: '#',
-		icon: Calendar
-	},
-	{
-		title: 'Search',
-		url: '#',
-		icon: Search
-	},
-	{
-		title: 'Settings',
-		url: '#',
-		icon: Settings
-	}
-];
+import { SIDEBAR_NAV } from '@/constants/navigate.ts';
+import { NavLink, useLocation } from 'react-router-dom';
 
 export default function AppSidebar() {
 	const { user } = useAuthenticated();
 	const { mutate: logout, isPending } = useLogout();
+	const location = useLocation();
 
 	return (
 		<Sidebar>
 			<SidebarHeader>
 				<SidebarMenu>
-					<SidebarMenuButton>
-						<PiggyBank />
-						Expense Tracker
+					<SidebarMenuButton className="py-5">
+						<div className="flex items-center gap-2">
+							<PiggyBank />
+							<div className="leading-tight">
+								<div className="text-sm font-semibold">Expense Tracker</div>
+								<div className="text-xs text-muted-foreground">Quản lý chi tiêu</div>
+							</div>
+						</div>
 					</SidebarMenuButton>
 				</SidebarMenu>
 			</SidebarHeader>
 
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>Application</SidebarGroupLabel>
+					<SidebarGroupLabel>Điều hướng</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{items.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<a href={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
-										</a>
+							{SIDEBAR_NAV.map((item) => (
+								<SidebarMenuItem key={item.to}>
+									<SidebarMenuButton
+										asChild
+										isActive={
+											location.pathname === item.to || (item.to !== '/admin/dashboard' && location.pathname.startsWith(item.to))
+										}
+									>
+										<NavLink to={item.to} end={item.to === '/admin/dashboard'}>
+											<item.icon className="mr-2 h-4 w-4" />
+											<span>{item.label}</span>
+										</NavLink>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
