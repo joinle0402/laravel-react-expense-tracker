@@ -9,7 +9,7 @@ export const client = axios.create({
 	headers: new AxiosHeaders({ 'Content-Type': 'application/json' })
 });
 
-client.interceptors.request.use(config => {
+client.interceptors.request.use((config) => {
 	const token = tokenStore.access;
 	if (token) {
 		config.headers = config.headers ?? {};
@@ -21,13 +21,13 @@ client.interceptors.request.use(config => {
 let isRefreshing = false;
 let refreshQueue: Array<(token: string | null) => void> = [];
 const onTokenRefreshed = (token: string | null) => {
-	refreshQueue.forEach(cb => cb(token));
+	refreshQueue.forEach((cb) => cb(token));
 	refreshQueue = [];
 };
 
 const ensureHeaders = (h?: AxiosRequestHeaders) => (h instanceof AxiosHeaders ? h : new AxiosHeaders(h));
 client.interceptors.response.use(
-	response => response,
+	(response) => response,
 	async (error: AxiosError) => {
 		const original = error.config as InternalAxiosRequestConfig | undefined;
 		if (!original || error.response?.status != 401) {
@@ -36,7 +36,7 @@ client.interceptors.response.use(
 
 		if (isRefreshing) {
 			return new Promise((resolve, reject) => {
-				refreshQueue.push(newToken => {
+				refreshQueue.push((newToken) => {
 					if (!newToken) return reject(error);
 					const headers = ensureHeaders(original.headers);
 					headers.set('Authorization', `Bearer ${newToken}`);
@@ -48,7 +48,15 @@ client.interceptors.response.use(
 
 		isRefreshing = true;
 		try {
-			const response = await axios.post(`${BASE_URL}/auth/refresh`, {}, { timeout: 10_000 });
+			const response = await axios.post(
+				`${BASE_URL}/auth/refresh`,
+				{},
+				{
+					timeout: 10_000,
+					withCredentials: true,
+					headers: new AxiosHeaders({ 'Content-Type': 'application/json' })
+				}
+			);
 			const newAccess: string | undefined = response.data?.access_token;
 			tokenStore.access = newAccess ?? null;
 
