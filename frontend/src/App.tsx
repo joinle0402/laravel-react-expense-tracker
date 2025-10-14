@@ -6,6 +6,7 @@ import VerifiedEmail from '@/features/auth/pages/VerifiedEmail.tsx';
 import Dashboard from '@/features/auth/pages/Dashboard.tsx';
 import PublicRoute from '@/components/routes/PublicRoute.tsx';
 import { ProtectedRoute } from '@/components/routes/ProtectedRoute.tsx';
+import AdminLayout from '@/components/AdminLayout.tsx';
 
 export default function App() {
 	return (
@@ -18,7 +19,9 @@ export default function App() {
 			</Route>
 
 			<Route element={<ProtectedRoute />}>
-				<Route path="/admin/dashboard" element={<Dashboard />} />
+				<Route element={<AdminLayout />}>
+					<Route path="/admin/dashboard" element={<Dashboard />} />
+				</Route>
 			</Route>
 
 			<Route path="*" element={<Navigate to="/login" />} />
