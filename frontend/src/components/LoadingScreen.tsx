@@ -1,10 +1,15 @@
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils.ts';
 
-export default function LoadingScreen() {
+type LoadingScreenProps = {
+	className?: string;
+};
+
+export default function LoadingScreen({ className }: LoadingScreenProps) {
 	return (
-		<div className="flex h-screen flex-col items-center justify-center">
-			<Loader2 className="h-10 w-10 animate-spin text-primary" />
-			<p className="mt-4 text-sm text-muted-foreground">Đang tải...</p>
+		<div className={cn('flex min-h-[60vh] flex-col items-center justify-center text-muted-foreground', className)}>
+			<Loader2 className="h-8 w-8 animate-spin mb-3" />
+			<p className="text-sm">Đang tải trang...</p>
 		</div>
 	);
 }

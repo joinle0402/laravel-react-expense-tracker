@@ -7,9 +7,10 @@ import type { User } from '@/features/auth/auth.model.ts';
 type AuthContextType = {
 	user?: User;
 	loading: boolean;
+	isAuthenticated: boolean;
 };
 
-export const AuthContext = createContext<AuthContextType>({ user: undefined, loading: false });
+export const AuthContext = createContext<AuthContextType>({ user: undefined, loading: false, isAuthenticated: false });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const { data: user, isLoading } = useQuery({
@@ -20,7 +21,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		enabled: !!localStorage.getItem('access_token'),
 		select: (user) => (user ? { ...user, verified: !!user.email_verified_at } : undefined)
 	});
-	return <AuthContext.Provider value={{ user, loading: isLoading }}>{children}</AuthContext.Provider>;
+	const isAuthenticated = !isLoading && !!user && user.verified;
+
+	return <AuthContext.Provider value={{ user, loading: isLoading, isAuthenticated }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => use(AuthContext);

@@ -1,8 +1,10 @@
+import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import PublicRoute from '@/components/routes/PublicRoute.tsx';
 import { ProtectedRoute } from '@/components/routes/ProtectedRoute.tsx';
 import AdminLayout from '@/components/AdminLayout.tsx';
-import { lazy, Suspense } from 'react';
+import AppFallback from '@/components/AppFallback.tsx';
+import { useAuth } from '@/features/auth/auth.context.tsx';
 
 const Login = lazy(() => import('@/features/auth/pages/Login'));
 const Register = lazy(() => import('@/features/auth/pages/Register'));
@@ -18,13 +20,10 @@ const Reports = lazy(() => import('@/features/reports/pages/Reports'));
 const BankSync = lazy(() => import('@/features/bank-sync/pages/BankSync'));
 const Settings = lazy(() => import('@/features/settings/pages/Settings'));
 
-function Fallback() {
-	return <div className="p-6 text-sm text-muted-foreground">Đang tải…</div>;
-}
-
 export default function App() {
+	const { isAuthenticated } = useAuth();
 	return (
-		<Suspense fallback={<Fallback />}>
+		<Suspense fallback={<AppFallback />}>
 			<Routes>
 				<Route element={<PublicRoute />}>
 					<Route path="/login" element={<Login />} />
