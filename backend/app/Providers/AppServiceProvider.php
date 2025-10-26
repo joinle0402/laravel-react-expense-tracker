@@ -8,6 +8,7 @@ use Doctrine\SqlFormatter\SqlFormatter;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         DB::listen(function (QueryExecuted $query) {
+            if (app()->runningInConsole()) return;
+            if (request() && request()->is('sanctum/*') || request()->routeIs('login', 'password.*')) return;
+            if (Str::contains(str($query->sql)->lower()->replace(['`','"'], ''), $query->connection->getTablePrefix().'personal_access_tokens')) return;
+
             $sql = (new SqlFormatter(new NullHighlighter()))->format($query->toRawSql(), "    ");
             $keywords = [
                 'select','from','where','join','inner join','left join','right join',

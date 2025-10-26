@@ -151,6 +151,20 @@
       <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/reflection-docblock" />
       <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/type-resolver" />
       <path value="$PROJECT_DIR$/backend/vendor/graham-campbell/result-type" />
+      <path value="$PROJECT_DIR$/vendor/_laravel_idea" />
+      <path value="$PROJECT_DIR$/backend/vendor/dragon-code/contracts" />
+      <path value="$PROJECT_DIR$/backend/vendor/dragon-code/pretty-array" />
+      <path value="$PROJECT_DIR$/backend/vendor/dragon-code/support" />
+      <path value="$PROJECT_DIR$/backend/vendor/archtechx/enums" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/config" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/lang" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/locale-list" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/locales" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/native-country-names" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/native-currency-names" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/native-locale-names" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/publisher" />
+      <path value="$PROJECT_DIR$/backend/vendor/symfony/polyfill-php81" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />
@@ -161,6 +175,11 @@
   </component>
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
+  </component>
+  <component name="PhpUnit">
+    <phpunit_settings>
+      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/backend/phpunit.xml" custom_loader_path="$PROJECT_DIR$/backend/vendor/autoload.php" paratest_path="$PROJECT_DIR$/backend/vendor/bin/paratest_for_phpstorm" use_configuration_file="true" />
+    </phpunit_settings>
   </component>
   <component name="Psalm">
     <Psalm_settings>
