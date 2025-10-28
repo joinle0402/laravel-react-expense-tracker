@@ -1,0 +1,17 @@
+[33mf2907a4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;32mbackup-before-rollback[m[33m)[m Xây danh mục category phần 1
+[33m6db51a8[m - Viết REST APIs cho danh mục - Thêm tiếng việt cho validate cài thêm (laravel-lang/lang --dev) - Chỉnh sửa lại nội dung message khi bị lỗi binding route
+[33m5aee2a2[m xử lý loading fallback
+[33m02bf08d[m Cập nhật sidebar item cho phù hợp với ứng dụng quản lý chi tiêu
+[33m690fea0[m Xây dựng AdminLayout.tsx (1) - Lấy thông tin đăng nhập điền vào 1 số nơi, chỉnh sửa lại giao diện dashboard, triển khai chức năng đăng xuất
+[33mc7d79ce[m Xây dựng AdminLayout.tsx (1)
+[33md6d075b[m Sửa lỗi refresh token axios
+[33m9e9a134[m triển khai PublicRoute ProtectedRoute
+[33ma839b76[m chuẩn hoá bằng file queryKeys.ts và bổ sung tuỳ chọn mặc định chưa react-query
+[33ma1adc54[m viết chức năng xác thực email
+[33m618fcd8[m viết chức năng trang đăng ký
+[33ma93a1a6[m viết trang register
+[33ma94fd2a[m tinh chỉnh lại giao diện login
+[33m5891468[m refactor code và viết InputField, PasswordField, useZodForm
+[33m5ffa279[m triển khai frontend
+[33mba62fdc[m triển khai xác thực email bằng mailstrap
+[33mb014e6a[m init project and setup basic auth apis
