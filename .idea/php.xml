@@ -165,6 +165,7 @@
       <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/native-locale-names" />
       <path value="$PROJECT_DIR$/backend/vendor/laravel-lang/publisher" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/polyfill-php81" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel/telescope" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

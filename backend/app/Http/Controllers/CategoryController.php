@@ -15,6 +15,7 @@ class CategoryController extends Controller
     {
         return CategoryResource::collection(
             Category::query()
+                ->select(['id', 'name', 'type', 'icon'])
                 ->when($request->name, fn ($query, $name) => $query->whereLike('name', $name))
                 ->when($request->type, fn ($query, $type) => $query->where('type', $type))
                 ->orderBy('id', 'desc')

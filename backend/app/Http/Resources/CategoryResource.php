@@ -14,8 +14,6 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'type' => $this->type,
             'icon' => $this->icon,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }
