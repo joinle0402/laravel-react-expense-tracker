@@ -10,14 +10,3 @@ export const SIDEBAR_NAV = [
 	{ label: 'Đồng bộ ngân hàng', to: '/admin/bank-sync', icon: RefreshCw },
 	{ label: 'Cài đặt', to: '/admin/settings', icon: Settings }
 ] as const;
-
-export const TITLE_BY_PATH: Record<string, string> = {
-	'/': 'Tổng quan',
-	'/transactions': 'Giao dịch',
-	'/categories': 'Danh mục',
-	'/accounts': 'Tài khoản',
-	'/budgets': 'Ngân sách',
-	'/reports': 'Báo cáo',
-	'/bank-sync': 'Đồng bộ ngân hàng',
-	'/settings': 'Cài đặt'
-};

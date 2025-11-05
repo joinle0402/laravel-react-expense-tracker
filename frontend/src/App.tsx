@@ -4,7 +4,6 @@ import PublicRoute from '@/components/routes/PublicRoute.tsx';
 import { ProtectedRoute } from '@/components/routes/ProtectedRoute.tsx';
 import AdminLayout from '@/components/AdminLayout.tsx';
 import AppFallback from '@/components/AppFallback.tsx';
-import { useAuth } from '@/features/auth/auth.context.tsx';
 
 const Login = lazy(() => import('@/features/auth/pages/Login'));
 const Register = lazy(() => import('@/features/auth/pages/Register'));
@@ -21,7 +20,6 @@ const BankSync = lazy(() => import('@/features/bank-sync/pages/BankSync'));
 const Settings = lazy(() => import('@/features/settings/pages/Settings'));
 
 export default function App() {
-	const { isAuthenticated } = useAuth();
 	return (
 		<Suspense fallback={<AppFallback />}>
 			<Routes>
