@@ -6,14 +6,12 @@ import { createQueryKeys } from '@/lib/queryKeys.ts';
 const queryKeys = createQueryKeys<CategoryFilter>('categories');
 
 export function useCategories(filter?: CategoryFilter) {
-	const query = useQuery({
+	return useQuery({
 		queryKey: queryKeys.list(filter),
 		queryFn: () => findAll(filter),
 		placeholderData: keepPreviousData,
 		staleTime: 10_000
 	});
-
-	return query;
 }
 
 export function useCategory(id: string) {

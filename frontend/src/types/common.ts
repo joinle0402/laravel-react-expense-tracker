@@ -33,3 +33,5 @@ export type PaginatedParams<T> = T & {
 	page?: number;
 	per_page?: number;
 };
+
+export type TransactionType = 'expense' | 'income';

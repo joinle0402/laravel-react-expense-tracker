@@ -117,4 +117,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+    [data-state='selected'] {
+        @apply bg-accent/50;
+    }
 }
