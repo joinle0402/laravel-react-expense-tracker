@@ -85,8 +85,8 @@ export const makeColumns = (onEdit?: (row: Category) => void, onDelete?: (row: C
 		header: () => <div className="font-semibold">Tên danh mục</div>,
 		cell: ({ row }) => (
 			<div className="flex items-center gap-2">
-				<IconPreview name={row.getValue<string>('icon')} className="text-muted-foreground" />
-				<span className="font-medium truncate max-w-[280px]">{row.getValue<string>('name')}</span>
+				<IconPreview name={row.getValue<string>('icon')} className="text-muted-foreground/80" />
+				<span className="font-medium truncate max-w-[260px] text-sm">{row.getValue<string>('name')}</span>
 			</div>
 		)
 	},
@@ -109,7 +109,7 @@ export const makeColumns = (onEdit?: (row: Category) => void, onDelete?: (row: C
 		id: 'actions',
 		header: () => <span className="sr-only">Hành động</span>,
 		cell: ({ row }) => (
-			<div className="flex justify-end gap-2">
+			<div className="flex justify-end gap-1">
 				<Button
 					variant="outline"
 					size="icon"
@@ -123,7 +123,7 @@ export const makeColumns = (onEdit?: (row: Category) => void, onDelete?: (row: C
 				<Button
 					variant="outline"
 					size="icon"
-					className="h-8 w-8 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200"
+					className="h-8 w-8 text-destructive hover:text-destructive"
 					title="Xoá"
 					onClick={() => onDelete?.(row.original)}
 				>
@@ -184,9 +184,8 @@ export default function CategoryTable({ data, onEdit, onDelete, page, pageSize }
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [rowSelection, setRowSelection] = useState({});
 
-	// 3) khởi tạo table dùng filter/sort model
 	const table = useReactTable({
-		data, // truyền nguyên data, không tự filter thủ công nữa
+		data,
 		columns,
 		state: { sorting, globalFilter, columnFilters, rowSelection },
 		meta: { currentPage: page, pageSize: pageSize ?? data.length },
@@ -206,8 +205,8 @@ export default function CategoryTable({ data, onEdit, onDelete, page, pageSize }
 	return (
 		<div className="space-y-4">
 			<div className="flex flex-col gap-3">
-				<div className="flex flex-wrap items-center gap-2 justify-between">
-					<div className="flex items-center gap-2">
+				<div className="flex flex-wrap items-center justify-between gap-3">
+					<div className="flex flex-wrap items-center gap-2">
 						<Input
 							placeholder="Tìm theo tên danh mục..."
 							value={globalFilter ?? ''}
@@ -235,22 +234,17 @@ export default function CategoryTable({ data, onEdit, onDelete, page, pageSize }
 					</div>
 				</div>
 				<div className="w-full">
-					<div className="w-full border rounded overflow-auto max-h-[450px]">
+					<div className={cn('w-full border rounded-md bg-card [&>div]:max-h-[calc(100vh-194px)] [&>div]:overflow-y-auto')}>
 						<Table className="min-w-full border-collapse">
-							<TableHeader className={cn('sticky top-0 z-20 border-b border-gray-400 hover:bg-muted/50 transition-colors')}>
+							<TableHeader className={cn('border-b border-gray-400 hover:bg-muted/50 transition-colors')}>
 								{table.getHeaderGroups().map((headerGroup) => (
-									<TableRow
-										key={headerGroup.id}
-										className={cn(
-											'border border-gray-300 bg-muted sticky top-0 z-10 text-xs font-semibold uppercase tracking-wide text-primary'
-										)}
-									>
+									<TableRow key={headerGroup.id} className="font-semibold text-xs text-muted-foreground">
 										{headerGroup.headers.map((header) => (
 											<TableHead
 												key={header.id}
 												className={cn(
-													'[&_tr]:border-b bg-muted sticky top-0 z-10 border',
-													'border border-border bg-muted sticky top-0 z-10 text-xs font-semibold uppercase tracking-wide',
+													'sticky top-0 z-20 bg-muted',
+													'bg-muted border-b text-xs font-semibold uppercase tracking-wide',
 													header.id === 'selection' && 'w-8 min-w-8',
 													header.id === 'index' && 'whitespace-nowrap w-8 min-w-8'
 												)}

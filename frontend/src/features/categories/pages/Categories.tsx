@@ -5,7 +5,7 @@ import PaginationBar from '@/components/PaginationBar.tsx';
 
 export default function Categories() {
 	const [page, setPage] = useState(1);
-	const [limit, setLimit] = useState(20);
+	const [limit, setLimit] = useState(50);
 	const { data } = useCategories({ page, per_page: limit });
 
 	const meta = data?.meta ?? { current_page: page, per_page: limit, total: 0, last_page: 1 };
