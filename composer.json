@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "doctrine/sql-formatter": "^1.5"
+    }
+}
