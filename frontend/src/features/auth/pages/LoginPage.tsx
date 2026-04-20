@@ -1,4 +1,3 @@
-import z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link as RouterLink } from 'react-router-dom';
@@ -9,21 +8,15 @@ import Link from '@mui/material/Link';
 import AuthLayout from '@/common/layout/AuthLayout.tsx';
 import InputField from '@/common/components/form/InputField.tsx';
 import PasswordField from '@/common/components/form/PasswordField.tsx';
-
-const schema = z.object({
-	email: z.email('Email không hợp lệ'),
-	password: z.string().min(4, 'Mật khẩu tối thiểu 6 ký tự'),
-});
-
-type FormValues = z.infer<typeof schema>;
+import { type LoginPayload, LoginSchema } from '@/features/auth/schema/auth.schema.ts';
 
 export default function LoginPage() {
-	const { control, handleSubmit } = useForm<FormValues>({
-		resolver: zodResolver(schema),
+	const { control, handleSubmit } = useForm<LoginPayload>({
+		resolver: zodResolver(LoginSchema),
 		defaultValues: { email: '', password: '' },
 	});
 
-	const onSubmit = (values: FormValues) => {
+	const onSubmit = (values: LoginPayload) => {
 		console.log(values);
 	};
 

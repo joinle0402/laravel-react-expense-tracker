@@ -15,8 +15,8 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
-        $registered = User::create(array_merge($request->validated(), ['password' => bcrypt($request->password)]));
-        event(new Registered($registered));
+        $user = User::create([...$request->validated(), 'password' => bcrypt($request->password)]);
+        event(new Registered($user));
         return response()->json(['message' => 'Đăng ký thành công. Vui lòng kiểm tra email để xác thực.'], 201);
     }
 

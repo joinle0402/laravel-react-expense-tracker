@@ -30,6 +30,17 @@ export default function InputField<T extends FieldValues>({ name, control, ...pr
 						'& .MuiOutlinedInput-input': {
 							color: fieldState.error ? 'error.main' : 'inherit',
 						},
+						'& input:-webkit-autofill': {
+							WebkitTextFillColor: fieldState.error ? '#d32f2f' : 'inherit',
+							WebkitBoxShadow: '0 0 0 1000px transparent inset',
+							transition: 'background-color 5000s ease-in-out 0s',
+						},
+						'& input:-webkit-autofill:hover': {
+							WebkitTextFillColor: fieldState.error ? '#d32f2f' : 'inherit',
+						},
+						'& input:-webkit-autofill:focus': {
+							WebkitTextFillColor: fieldState.error ? '#d32f2f' : 'inherit',
+						},
 					}}
 				/>
 			)}
