@@ -44,3 +44,17 @@ export const handleApiError = <TFieldValues extends FieldValues>({
 
 	toast.error(defaultMessage);
 };
+
+export function getErrorMessage(error: unknown): string {
+	if (isAxiosError<ApiErrorResponse>(error)) {
+		const data = error.response?.data;
+
+		if (data?.message) return data.message;
+
+		const firstFieldError = data?.errors ? Object.values(data.errors)[0]?.[0] : null;
+
+		if (firstFieldError) return firstFieldError;
+	}
+
+	return 'Có lỗi xảy ra. Vui lòng thử lại.';
+}

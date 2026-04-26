@@ -16,18 +16,44 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create([...$request->validated(), 'password' => bcrypt($request->password)]);
+        $user->refresh();
         event(new Registered($user));
-        return response()->json(['message' => 'Đăng ký thành công. Vui lòng kiểm tra email để xác thực.'], 201);
+        $token = $user->createToken('access_token')->plainTextToken;
+        return response()->json([
+            'message' => 'Đăng ký thành công. Vui lòng kiểm tra email để xác thực.',
+            'data' => compact('token', 'user'),
+        ], 201);
     }
 
     public function verifyEmail(Request $_, int $id, string $hash): JsonResponse
     {
         $user = User::findOrFail($id);
         throwIf(!hash_equals($hash, sha1($user->getEmailForVerification())), 'Link xác thực không hợp lệ', 403);
-        throwIf($user->hasVerifiedEmail(), 'Email đã được xác thực trước đó');
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email đã được xác thực rồi.',
+                'data' => compact('user'),
+            ], 200);
+        }
         $user->markEmailAsVerified();
         event(new Verified($user));
-        return response()->json(['message' => 'Xác thực email thành công.',]);
+        return response()->json([
+            'message' => 'Xác thực email thành công.',
+            'data' => compact('user'),
+        ]);
+    }
+
+    public function resendEmail(Request $request)
+    {
+        $user = $request->user();
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email đã được xác thực rồi.',
+                'data' => compact('user'),
+            ], 422);
+        }
+        $user->sendEmailVerificationNotification();
+        return response()->json(['message' => 'Đã gửi lại email xác thực.']);
     }
 
     public function login(LoginRequest $request): JsonResponse

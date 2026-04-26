@@ -1,4 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import AuthLayout from '@/common/layout/AuthLayout.tsx';
@@ -11,10 +11,11 @@ import Link from '@mui/material/Link';
 import { type RegisterPayload, RegisterSchema } from '@/features/auth/schema/auth.schema.ts';
 import { useRegister } from '@/features/auth/hooks/use-register.ts';
 import { handleApiError } from '@/common/utils/handle-api-error.ts';
-import type { MessageResponse } from '@/common/type/api.type.ts';
 import { toast } from '@/common/libs/toast.ts';
+import { saveAuth } from '@/features/auth/store/auth-store.ts';
 
 export default function RegisterPage() {
+	const navigate = useNavigate();
 	const registerMutation = useRegister();
 	const { control, handleSubmit, setError } = useForm<RegisterPayload>({
 		resolver: zodResolver(RegisterSchema),
@@ -28,7 +29,11 @@ export default function RegisterPage() {
 
 	const onSubmit = async (values: RegisterPayload) => {
 		registerMutation.mutate(values, {
-			onSuccess: (response: MessageResponse) => toast.success(response.message),
+			onSuccess: (response) => {
+				toast.success(response.message);
+				saveAuth(response.data.token, response.data.user);
+				navigate('/verify-email', { replace: true });
+			},
 			onError: (error) => handleApiError({ error, setError }),
 		});
 	};

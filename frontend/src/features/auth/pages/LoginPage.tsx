@@ -23,7 +23,7 @@ export default function LoginPage() {
 	return (
 		<AuthLayout title="Đăng nhập" subtitle="Chào mừng bạn quay lại">
 			<Stack component="form" spacing={2} onSubmit={handleSubmit(onSubmit)}>
-				<InputField control={control} name="email" label="Email" />
+				<InputField control={control} name="email" autoComplete="email" label="Email" />
 				<PasswordField control={control} name="password" label="Mật khẩu" />
 				<Button type="submit" variant="contained" size="large">
 					Đăng nhập

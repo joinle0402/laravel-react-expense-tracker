@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Doctrine\SqlFormatter\NullHighlighter;
 use Doctrine\SqlFormatter\SqlFormatter;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -44,6 +45,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        VerifyEmail::toMailUsing(function ($notifiable, string $url) {
+            $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:5173'), '/');
+            $parts = parse_url($url);
+            parse_str($parts['query'] ?? '', $query);
+            $verifyUrl = $frontendUrl
+                . '/verify-email/' . $notifiable->getKey()
+                . '/' . sha1($notifiable->getEmailForVerification())
+                . '?' . http_build_query($query);
+            return (new \Illuminate\Notifications\Messages\MailMessage)
+                ->subject('Xác thực địa chỉ email')
+                ->line('Vui lòng nhấn nút bên dưới để xác thực email của bạn.')
+                ->action('Xác thực email', $verifyUrl)
+                ->line('Nếu bạn không tạo tài khoản, hãy bỏ qua email này.');
+        });
     }
 }
