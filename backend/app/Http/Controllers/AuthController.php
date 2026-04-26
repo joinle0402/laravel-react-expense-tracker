@@ -25,7 +25,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function verifyEmail(Request $_, int $id, string $hash): JsonResponse
+    public function verifyEmail(int $id, string $hash): JsonResponse
     {
         $user = User::findOrFail($id);
         throwIf(!hash_equals($hash, sha1($user->getEmailForVerification())), 'Link xác thực không hợp lệ', 403);
@@ -33,7 +33,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Email đã được xác thực rồi.',
                 'data' => compact('user'),
-            ], 200);
+            ]);
         }
         $user->markEmailAsVerified();
         event(new Verified($user));
@@ -63,7 +63,10 @@ class AuthController extends Controller
         throwIf(!$user || !Hash::check($credentials['password'], $user->password), "Email hoặc mật khẩu không đúng", 401);
         throwIf(!$user->hasVerifiedEmail(), 'Tài khoản chưa xác thực email.', 403);
         $token = $user->createToken('access_token')->plainTextToken;
-        return response()->json(compact('token', 'user'));
+        return response()->json([
+            'message' => 'Đăng nhập tài khoản thành công!',
+            'data' => compact('token', 'user'),
+        ]);
     }
 
     public function me(Request $request): JsonResponse
