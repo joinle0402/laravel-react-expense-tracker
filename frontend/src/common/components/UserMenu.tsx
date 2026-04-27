@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStoredUser } from '@/features/auth/store/auth-store.ts';
+import { clearAuth, getStoredUser } from '@/features/auth/store/auth-store.ts';
 import { useMutation } from '@tanstack/react-query';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -14,6 +14,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { Logout, Person, Settings } from '@mui/icons-material';
 import { getAvatarColor, getAvatarShortName } from '@/common/utils/avatar.ts';
 import { useTheme } from '@mui/material';
+import { toast } from '@/common/libs/toast.ts';
+import { authApi } from '@/features/auth/api/auth.api.ts';
 
 export default function UserMenu() {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -21,11 +23,21 @@ export default function UserMenu() {
 	const navigate = useNavigate();
 	const isOpen = Boolean(anchorEl);
 	const userProfile = getStoredUser();
-	const logoutMutation = useMutation({});
+	const logoutMutation = useMutation({
+		mutationFn: authApi.logout,
+	});
 
 	const handleOpen = (event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
 	const handleClose = () => setAnchorEl(null);
-	const handleButtonLogoutClick = () => {};
+	const handleButtonLogoutClick = () => {
+		logoutMutation.mutate(undefined, {
+			onSettled: () => {
+				clearAuth();
+				navigate('/login', { replace: true });
+				toast.success('Đăng xuất tài khoản thành công');
+			},
+		});
+	};
 
 	return (
 		<Box

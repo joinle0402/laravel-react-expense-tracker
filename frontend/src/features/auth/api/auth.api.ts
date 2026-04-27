@@ -10,15 +10,18 @@ export const authApi = {
 	async login(payload: LoginPayload): Promise<AuthResponse> {
 		return http.post<AuthResponse>('/auth/login', payload);
 	},
-	me() {
+	me(): Promise<User> {
 		return http.get<User>('/auth/me');
 	},
-	resendEmail() {
+	resendEmail(): Promise<MessageResponse> {
 		return http.post<MessageResponse>('/auth/email/resend');
 	},
-	verifyEmail(payload: VerifyEmailPayload) {
+	verifyEmail(payload: VerifyEmailPayload): Promise<VerifyEmailResponse> {
 		const { id, hash, expires, signature } = payload;
 		const query = new URLSearchParams({ expires, signature }).toString();
 		return http.get<VerifyEmailResponse>(`/auth/email/verify/${id}/${hash}?${query}`);
+	},
+	logout(): Promise<MessageResponse> {
+		return http.post<MessageResponse>('/auth/logout');
 	},
 };

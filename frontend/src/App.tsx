@@ -10,6 +10,7 @@ import CategoryPage from '@/features/category/page/CategoryPage.tsx';
 import ButgetPage from '@/features/budget/pages/ButgetPage.tsx';
 import SettingPage from '@/features/setting/pages/SettingPage.tsx';
 import NotFoundPage from '@/common/pages/NotFoundPage.tsx';
+import ProtectedRoute from '@/features/auth/components/ProtectedRoute.tsx';
 
 export default function App() {
 	return (
@@ -22,12 +23,14 @@ export default function App() {
 				</Route>
 				<Route path="/verify-email" element={<VerifyEmailPage />} />
 				<Route path="/verify-email/:id/:hash" element={<VerifyEmailPage />} />
-				<Route path="/admin" element={<AdminLayout />}>
-					<Route path="dashboard" element={<DashboardPage />} />
-					<Route path="transactions" element={<TransactionsPage />} />
-					<Route path="categories" element={<CategoryPage />} />
-					<Route path="budgets" element={<ButgetPage />} />
-					<Route path="settings" element={<SettingPage />} />
+				<Route element={<ProtectedRoute />}>
+					<Route path="/admin" element={<AdminLayout />}>
+						<Route path="dashboard" element={<DashboardPage />} />
+						<Route path="transactions" element={<TransactionsPage />} />
+						<Route path="categories" element={<CategoryPage />} />
+						<Route path="budgets" element={<ButgetPage />} />
+						<Route path="settings" element={<SettingPage />} />
+					</Route>
 				</Route>
 				<Route path="*" element={<NotFoundPage />} />
 			</Routes>

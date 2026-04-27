@@ -21,10 +21,10 @@ export default function LoginPage() {
 		resolver: zodResolver(LoginSchema),
 		defaultValues: { email: '', password: '' },
 	});
-	const { mutate: onSubmit } = useMutation({
+	const { mutate: onSubmit, isPending } = useMutation({
 		mutationFn: authApi.login,
-		onSuccess: (response) => {
-			toast.success('Đăng nhập thông');
+		onSuccess: response => {
+			toast.success('Đăng nhập tài khoản thành công!');
 			saveAuth(response.data.token, response.data.user);
 			if (!response.data.user.email_verified_at) {
 				navigate('/verify-email', { replace: true });
@@ -32,17 +32,17 @@ export default function LoginPage() {
 				navigate('/admin/dashboard', { replace: true });
 			}
 		},
-		onError: (error) => {
+		onError: error => {
 			handleApiError({ error, setError });
 		},
 	});
 
 	return (
 		<AuthLayout title="Đăng nhập" subtitle="Chào mừng bạn quay lại">
-			<Stack component="form" spacing={2} onSubmit={handleSubmit((payload) => onSubmit(payload))}>
+			<Stack component="form" spacing={2} onSubmit={handleSubmit(payload => onSubmit(payload))}>
 				<InputField control={control} name="email" autoComplete="email" label="Email" />
 				<PasswordField control={control} name="password" label="Mật khẩu" />
-				<Button type="submit" variant="contained" size="large">
+				<Button type="submit" variant="contained" size="large" loading={isPending} loadingIndicator="Đang đăng nhập…">
 					Đăng nhập
 				</Button>
 				<Typography align="center" variant="body2">
