@@ -9,6 +9,7 @@ import TransactionsPage from '@/features/transactions/pages/TransactionsPage.tsx
 import CategoryPage from '@/features/category/page/CategoryPage.tsx';
 import ButgetPage from '@/features/budget/pages/ButgetPage.tsx';
 import SettingPage from '@/features/setting/pages/SettingPage.tsx';
+import NotFoundPage from '@/common/pages/NotFoundPage.tsx';
 
 export default function App() {
 	return (
@@ -28,6 +29,7 @@ export default function App() {
 					<Route path="budgets" element={<ButgetPage />} />
 					<Route path="settings" element={<SettingPage />} />
 				</Route>
+				<Route path="*" element={<NotFoundPage />} />
 			</Routes>
 		</BrowserRouter>
 	);
