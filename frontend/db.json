@@ -1,0 +1,18 @@
+{
+    "categories": [
+        {
+            "id": "1",
+            "name": "Ăn uống",
+            "type": "expense",
+            "is_system": true,
+            "is_deleted": false
+        },
+        {
+            "id": "2",
+            "name": "Lương",
+            "type": "income",
+            "is_system": true,
+            "is_deleted": false
+        }
+    ]
+}
