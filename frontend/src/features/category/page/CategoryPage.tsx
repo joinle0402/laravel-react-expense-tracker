@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CategoryTab } from '@/features/category/types/category.type';
+import type { Category, CategoryTab } from '@/features/category/types/category.type';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -25,67 +25,27 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
+import { useConfirmDialog } from '@/common/hooks/useConfirmDialog.ts';
+import { useCategories } from '@/features/category/hooks/useCategories.ts';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
 	const [search, setSearch] = useState<string>('');
-	const [formMode, setFormMode] = useState<string>('create');
-	const [openForm, setOpenForm] = useState(false);
-	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	const { deleteConfirm } = useConfirmDialog();
+	const { data: response = [] } = useCategories();
 
-	const categories = [
-		{ name: 'Ăn uống', type: 'income', is_system: false, is_deleted: false },
-		{ name: 'Giáo dục', type: 'expense', is_system: true, is_deleted: false },
-		{ name: 'Giải trí', type: 'expense', is_system: true, is_deleted: false },
-		{ name: 'Giáo dục', type: 'income', is_system: false, is_deleted: false },
-		{ name: 'Tiền lương', type: 'income', is_system: true, is_deleted: false },
-		{ name: 'Tiền thưởng', type: 'expense', is_system: true, is_deleted: false },
-	];
-	const filtered = categories.filter(category => {
-		const matchesSearch = category.name.toLowerCase().includes(search.toLowerCase());
-
-		if (!matchesSearch) return false;
-
-		if (tab === 'deleted') {
-			return category.is_deleted;
-		}
-
-		if (tab === 'income') {
-			return category.type === 'income' && !category.is_deleted;
-		}
-
-		if (tab === 'expense') {
-			return category.type === 'expense' && !category.is_deleted;
-		}
-
-		return !category.is_deleted;
-	});
-
-	const handleOpenForm = () => {
-		setOpenForm(true);
-	};
-
-	const handleCloseForm = () => {
-		setOpenForm(false);
-	};
-
-	const handleOpenDeleteForm = () => {
-		setOpenDeleteDialog(true);
-	};
-
-	const handleCloseDeleteForm = () => {
-		setOpenDeleteDialog(false);
+	const handleDeleteCategory = async (category: Category) => {
+		const confirmed = await deleteConfirm({
+			title: `Xóa danh mục "${category.name}"?`,
+			warning: 'Danh mục này sẽ không còn xuất hiện khi tạo giao dịch mới. Các giao dịch cũ dùng danh mục này vẫn được giữ nguyên.',
+			message: 'Hành động này chỉ đánh dấu danh mục là đã xóa, không xóa giao dịch cũ.',
+		});
+		console.log({ confirmed });
 	};
 
 	return (
 		<Box sx={{ p: 1 }}>
-			<Stack
-				direction="row"
-				spacing={2}
-				sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
-			>
+			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
 				<Box>
 					<Typography variant="h5" sx={{ fontWeight: 700 }}>
 						Quản lý danh mục
@@ -96,7 +56,7 @@ export default function CategoryPage() {
 					</Typography>
 				</Box>
 
-				<Button variant="contained" onClick={handleOpenForm} startIcon={<AddIcon />}>
+				<Button variant="contained" startIcon={<AddIcon />}>
 					Tạo danh mục
 				</Button>
 			</Stack>
@@ -131,7 +91,7 @@ export default function CategoryPage() {
 			</Grid>
 			<Grid container>
 				<Grid size={12}>
-					<TableContainer component={Paper} variant='elevation'>
+					<TableContainer component={Paper} variant="elevation">
 						<Table>
 							<TableHead>
 								<TableRow>
@@ -140,11 +100,13 @@ export default function CategoryPage() {
 									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Loại </TableCell>
 									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Nguồn</TableCell>
 									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Trạng thái</TableCell>
-									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }} align="right">Hành động</TableCell>
+									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }} align="right">
+										Hành động
+									</TableCell>
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{filtered.map((category, index) => (
+								{response?.data?.map((category: Category, index: number) => (
 									<TableRow key={index}>
 										<TableCell>{index + 1}</TableCell>
 										<TableCell>
@@ -163,11 +125,8 @@ export default function CategoryPage() {
 														<ReceiptLongIcon fontSize="small" />
 													)}
 												</Avatar>
-												<Typography sx={{ fontWeight: 600 }}>
-													{category.name}
-												</Typography>
+												<Typography sx={{ fontWeight: 600 }}>{category.name}</Typography>
 											</Stack>
-											
 										</TableCell>
 										<TableCell>
 											<Chip
@@ -198,7 +157,7 @@ export default function CategoryPage() {
 													<EditIcon fontSize="small" />
 												</IconButton>
 
-												<IconButton size="small" color="error">
+												<IconButton size="small" color="error" onClick={() => handleDeleteCategory(category)}>
 													<DeleteIcon fontSize="small" />
 												</IconButton>
 											</Stack>
@@ -210,16 +169,6 @@ export default function CategoryPage() {
 					</TableContainer>
 				</Grid>
 			</Grid>
-
-			<Dialog open={openForm} onClose={handleCloseForm} fullWidth maxWidth="sm">
-				<DialogTitle>
-					{formMode === 'create' ? 'Tạo danh mục' : 'Sửa danh mục'}
-				</DialogTitle>
-			</Dialog>
-			
-			<Dialog open={openDeleteDialog} onClose={handleCloseForm} fullWidth maxWidth="sm">
-
-			</Dialog>
 		</Box>
 	);
 }
