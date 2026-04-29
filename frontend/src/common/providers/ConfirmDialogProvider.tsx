@@ -54,10 +54,10 @@ export default function ConfirmDialogProvider({ children }: { children: ReactNod
 		<ConfirmDialogContext.Provider value={{ confirm, deleteConfirm }}>
 			{children}
 			<Dialog open={state.open} onClose={handleButtonCloseClick} fullWidth maxWidth={state.maxWidth}>
-				<DialogTitle>{state.title}</DialogTitle>
-				<DialogContent>
+				<DialogTitle sx={{ fontWeight: 600 }}>{state.title}</DialogTitle>
+				<DialogContent sx={{ pt: 1 }}>
 					{state.warning && (
-						<Alert severity="warning" sx={{ mb: 2 }}>
+						<Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
 							{state.warning}
 						</Alert>
 					)}
@@ -67,7 +67,7 @@ export default function ConfirmDialogProvider({ children }: { children: ReactNod
 						</Typography>
 					)}
 				</DialogContent>
-				<DialogActions>
+				<DialogActions sx={{ px: 3, pb: 2 }}>
 					<Button onClick={handleButtonCloseClick}>{state.cancelText}</Button>
 
 					<Button color={state.confirmColor} variant="contained" onClick={handleButtonConfirmClick}>

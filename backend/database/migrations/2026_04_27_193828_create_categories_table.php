@@ -17,7 +17,6 @@ return new class extends Migration
             $table->boolean('is_system')->default(false);
             $table->softDeletes();
             $table->timestamps();
-            $table->unique(['user_id', 'name', 'type']);
         });
     }
 

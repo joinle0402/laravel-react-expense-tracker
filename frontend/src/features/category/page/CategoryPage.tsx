@@ -27,6 +27,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { useConfirmDialog } from '@/common/hooks/useConfirmDialog.ts';
 import { useCategories } from '@/features/category/hooks/useCategories.ts';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
@@ -39,13 +40,14 @@ export default function CategoryPage() {
 			title: `Xóa danh mục "${category.name}"?`,
 			warning: 'Danh mục này sẽ không còn xuất hiện khi tạo giao dịch mới. Các giao dịch cũ dùng danh mục này vẫn được giữ nguyên.',
 			message: 'Hành động này chỉ đánh dấu danh mục là đã xóa, không xóa giao dịch cũ.',
+			maxWidth: 'sm'
 		});
 		console.log({ confirmed });
 	};
 
 	return (
 		<Box sx={{ p: 1 }}>
-			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
 				<Box>
 					<Typography variant="h5" sx={{ fontWeight: 700 }}>
 						Quản lý danh mục
@@ -55,120 +57,134 @@ export default function CategoryPage() {
 						Tạo và quản lý danh mục thu nhập, chi tiêu của bạn.
 					</Typography>
 				</Box>
-
-				<Button variant="contained" startIcon={<AddIcon />}>
-					Tạo danh mục
-				</Button>
 			</Stack>
 
-			<Tabs value={tab} onChange={(_, value) => setTab(value)} sx={{ mb: 2 }}>
-				<Tab label="Tất cả" value="all" />
-				<Tab label="Chi tiêu" value="expense" />
-				<Tab label="Thu nhập" value="income" />
-				<Tab label="Đã xóa" value="deleted" />
-			</Tabs>
-
-			<Grid container spacing={2}>
-				<Grid size={4}>
-					<TextField
-						fullWidth
-						size="small"
-						placeholder="Tìm kiếm danh mục..."
-						value={search}
-						onChange={e => setSearch(e.target.value)}
-						slotProps={{
-							input: {
-								startAdornment: (
-									<InputAdornment position="start">
-										<SearchIcon fontSize="small" />
-									</InputAdornment>
-								),
-							},
-						}}
-						sx={{ mb: 2 }}
-					/>
+			<Paper sx={{ p: 2, borderRadius: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
+				<Grid container spacing={2} sx={{ alignItems: 'center' }}>
+					<Grid size={6}>
+						<Tabs value={tab} onChange={(_, value) => setTab(value)} sx={{ mb: 2 }}>
+							<Tab label="Tất cả" value="all" />
+							<Tab label="Chi tiêu" value="expense" />
+							<Tab label="Thu nhập" value="income" />
+							<Tab label="Đã xóa" value="deleted" />
+						</Tabs>
+					</Grid>
+					<Grid size={6}>
+						<Stack direction="row" spacing={1} sx={{ alignItems: "center", minHeight: 40 }}>
+							<TextField
+								fullWidth
+								size="small"
+								placeholder="Tìm kiếm danh mục..."
+								value={search}
+								onChange={e => setSearch(e.target.value)}
+								slotProps={{
+									input: {
+										startAdornment: (
+											<InputAdornment position="start">
+												<SearchIcon fontSize="small" />
+											</InputAdornment>
+										),
+									},
+								}}
+								sx={{ flex: 1, minWidth: 260 }}
+							/>
+							<Button variant="contained" startIcon={<AddIcon />} sx={{ minHeight: 40 }}>
+								Tạo danh mục
+							</Button>
+						</Stack>
+					</Grid>
 				</Grid>
-			</Grid>
-			<Grid container>
-				<Grid size={12}>
-					<TableContainer component={Paper} variant="elevation">
-						<Table>
-							<TableHead>
-								<TableRow>
-									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>#</TableCell>
-									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Tên danh mục</TableCell>
-									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Loại </TableCell>
-									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Nguồn</TableCell>
-									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Trạng thái</TableCell>
-									<TableCell sx={{ fontWeight: 700, textTransform: 'uppercase' }} align="right">
-										Hành động
-									</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{response?.data?.map((category: Category, index: number) => (
-									<TableRow key={index}>
-										<TableCell>{index + 1}</TableCell>
-										<TableCell>
-											<Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-												<Avatar
-													sx={{
-														width: 36,
-														height: 36,
-														bgcolor: category.type === 'income' ? 'success.light' : 'error.light',
-														color: 'white',
-													}}
-												>
-													{category.type === 'income' ? (
-														<TrendingUpIcon fontSize="small" />
-													) : (
-														<ReceiptLongIcon fontSize="small" />
-													)}
-												</Avatar>
-												<Typography sx={{ fontWeight: 600 }}>{category.name}</Typography>
-											</Stack>
-										</TableCell>
-										<TableCell>
-											<Chip
-												size="small"
-												label={category.type === 'income' ? 'Thu nhập' : 'Chi tiêu'}
-												color={category.type === 'income' ? 'success' : 'error'}
-												variant="outlined"
-											/>
-										</TableCell>
-										<TableCell>
-											<Chip
-												size="small"
-												label={category.is_system ? 'Hệ thống' : 'Cá nhân'}
-												color={category.is_system ? 'default' : 'primary'}
-												variant={category.is_system ? 'outlined' : 'filled'}
-											/>
-										</TableCell>
-										<TableCell>
-											<Chip
-												size="small"
-												label={category.is_deleted ? 'Đã xóa' : 'Hoạt động'}
-												color={category.is_deleted ? 'default' : 'success'}
-											/>
-										</TableCell>
-										<TableCell align="right">
-											<Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
-												<IconButton size="small" color="primary">
-													<EditIcon fontSize="small" />
-												</IconButton>
-
-												<IconButton size="small" color="error" onClick={() => handleDeleteCategory(category)}>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Stack>
+				<Grid container>
+					<Grid size={12}>
+						<TableContainer component={Paper} variant="elevation" sx={{ maxHeight: 'calc(100vh - 360px)' }}>
+							<Table stickyHeader>
+								<TableHead>
+									<TableRow>
+										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '10px',  }}>#</TableCell>
+										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '35%',  }}>Tên danh mục</TableCell>
+										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '160px', }}>Loại </TableCell>
+										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '160px', }}>Nguồn</TableCell>
+										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '160px', }}>Trạng thái</TableCell>
+										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '100px', }} align="right">
+											Hành động
 										</TableCell>
 									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</TableContainer>
+								</TableHead>
+								<TableBody>
+									{response?.data?.map((category: Category, index: number) => (
+										<TableRow hover key={index} sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' }, '&:last-child td': { borderBottom: 0 } }}>
+											<TableCell>{index + 1}</TableCell>
+											<TableCell>
+												<Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+													<Avatar
+														sx={{
+															width: 36,
+															height: 36,
+															bgcolor: category.type === 'income' ? 'success.light' : 'error.light',
+															color: 'white',
+														}}
+													>
+														{category.type === 'income' ? (
+															<TrendingUpIcon fontSize="small" />
+														) : (
+															<ReceiptLongIcon fontSize="small" />
+														)}
+													</Avatar>
+													<Typography sx={{ fontWeight: 600 }}>{category.name}</Typography>
+												</Stack>
+											</TableCell>
+											<TableCell>
+												<Chip
+													size="small"
+													label={category.type === 'income' ? 'Thu nhập' : 'Chi tiêu'}
+													color={category.type === 'income' ? 'success' : 'error'}
+													variant="outlined"
+												/>
+											</TableCell>
+											<TableCell>
+												<Chip
+													size="small"
+													label={category.is_system ? 'Hệ thống' : 'Cá nhân'}
+													color={category.is_system ? 'default' : 'primary'}
+													variant={category.is_system ? 'outlined' : 'filled'}
+												/>
+											</TableCell>
+											<TableCell>
+												<Chip
+													size="small"
+													label={category.is_deleted ? 'Đã xóa' : 'Hoạt động'}
+													color={category.is_deleted ? 'default' : 'success'}
+													sx={{
+														height: 24,
+														fontWeight: 600,
+														bgcolor: category.is_deleted ? 'default' : 'success.50',
+														color: category.is_deleted ? 'default' : 'success.700',
+													}}
+												/>
+											</TableCell>
+											<TableCell align="right">
+												<Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
+													<Tooltip title="Sửa danh mục">
+														<IconButton size="small" color="primary">
+															<EditIcon fontSize="small" />
+														</IconButton>
+													</Tooltip>
+
+													<Tooltip title={category.is_system ? 'Không thể xóa danh mục hệ thống' : 'Xóa danh mục'}>
+														<IconButton size="small" color="error" disabled={category.is_system} onClick={() => handleDeleteCategory(category)}>
+															<DeleteIcon fontSize="small" />
+														</IconButton>
+													</Tooltip>
+												</Stack>
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</TableContainer>
+					</Grid>
 				</Grid>
-			</Grid>
+			</Paper>
 		</Box>
 	);
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
 
@@ -63,10 +64,10 @@ class CategorySeeder extends Seeder
                 [
                     'name' => $item['name'],
                     'type' => $item['type'],
-                    'user_id' => 43,
+                    'user_id' => User::where('email', 'johnsmith2001it@gmail.com')->first()->id,
                 ],
                 [
-                    'is_system' => true,
+                    'is_system' => random_int(0, 1),
                     'deleted_at' => null,
                 ]
             );
