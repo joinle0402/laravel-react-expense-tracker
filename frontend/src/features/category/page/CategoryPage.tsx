@@ -39,6 +39,13 @@ export default function CategoryPage() {
 	const debouncedSearch = useDebounce(search);
 	const { deleteConfirm } = useConfirmDialog();
 	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim() });
+	const counts = response?.meta?.counts;
+	const tabs = [
+		{ value: 'all', label: 'Tất cả' },
+		{ value: 'expense', label: 'Chi tiêu' },
+		{ value: 'income', label: 'Thu nhập' },
+		{ value: 'deleted', label: 'Đã xóa' },
+	] as const;
 
 	const handleDeleteCategory = async (category: Category) => {
 		const confirmed = await deleteConfirm({
@@ -68,10 +75,35 @@ export default function CategoryPage() {
 				<Grid container spacing={2} sx={{ alignItems: 'center' }}>
 					<Grid size={6}>
 						<Tabs value={tab} onChange={(_, value) => setTab(value)} sx={{ mb: 2 }}>
-							<Tab label="Tất cả" value="all" />
-							<Tab label="Chi tiêu" value="expense" />
-							<Tab label="Thu nhập" value="income" />
-							<Tab label="Đã xóa" value="deleted" />
+							{tabs.map(item => (
+								<Tab
+									key={item.value}
+									value={item.value}
+									label={
+										<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+											<Typography variant="body2" sx={{ fontWeight: 600 }}>
+												{item.label}
+											</Typography>
+											{counts && (
+												<Typography
+													variant="caption"
+													sx={{
+														px: 0.75,
+														py: 0.15,
+														borderRadius: 10,
+														bgcolor: 'action.hover',
+														color: 'text.secondary',
+														fontWeight: 600,
+														lineHeight: 1.4,
+													}}
+												>
+													{counts[item.value] || 0}
+												</Typography>
+											)}
+										</Box>
+									}
+								/>
+							))}
 						</Tabs>
 					</Grid>
 					<Grid size={6}>

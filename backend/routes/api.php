@@ -12,9 +12,9 @@ Route::prefix('auth')->group(function () {
         Route::post('/email/resend', [AuthController::class, 'resendEmail'])->middleware(['throttle:1,1']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
-        Route::apiResource('categories', CategoryController::class);
     });
 });
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('categories/summary', [CategoryController::class, 'summary']);
     Route::apiResource('categories', CategoryController::class);
 });

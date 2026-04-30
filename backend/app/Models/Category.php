@@ -26,4 +26,13 @@ class Category extends Model
             $q->where('user_id', $userId)->orWhere('is_system', true);
         });
     }
+
+    public function scopeFilterTab(Builder $query, string $tab): Builder
+    {
+        return match ($tab) {
+            'expense', 'income' => $query->where('type', $tab),
+            'deleted' => $query->onlyTrashed(),
+            default => $query->whereNull('deleted_at'),
+        };
+    }
 }

@@ -11,23 +11,34 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        return Category::query()
-            ->visibleTo(auth()->id())
-            ->when($request->filled('tab'), function ($query, $tab) use ($request) {
-                if ($request->tab == 'income') {
-                    $query->where('type', 'income');
-                } else if ($request->tab == 'expense') {
-                    $query->where('type', 'expense');
-                } else if ($request->tab == 'deleted') {
-                    $query->whereNotNull('deleted_at');
-                }
-            })
+        $baseQuery = Category::visibleTo(auth()->id());
+        $counts = (clone $baseQuery)
+            ->withTrashed()
+            ->selectRaw("
+                COUNT(CASE WHEN deleted_at IS NULL THEN 1 END) as all_count,
+                COUNT(CASE WHEN type = 'expense' AND deleted_at IS NULL THEN 1 END) as expense_count,
+                COUNT(CASE WHEN type = 'income' AND deleted_at IS NULL THEN 1 END) as income_count,
+                COUNT(CASE WHEN deleted_at IS NOT NULL THEN 1 END) as deleted_count
+            ")
+            ->first();
+        $categories = (clone $baseQuery)
+            ->withTrashed()
+            ->filterTab($request->tab)
             ->when($request->filled('search'), function ($query) use ($request) {
-                $search = trim($request->search);
-                $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%{$search}%"]);
+                $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%{".trim($request->search)."}%"]);
             })
-            ->when($request->filled('type'), fn ($query) => $query->where('type', $request->type))
             ->paginate($request->integer('size', 50));
+        return response()->json([
+            ...$categories->toArray(),
+            'meta' => [
+                'counts' => [
+                    'all' => (int) $counts->all_count,
+                    'expense' => (int) $counts->expense_count,
+                    'income' => (int) $counts->income_count,
+                    'deleted' => (int) $counts->deleted_count,
+                ],
+            ],
+        ]);
     }
 
     public function store(StoreCategoryRequest $request)

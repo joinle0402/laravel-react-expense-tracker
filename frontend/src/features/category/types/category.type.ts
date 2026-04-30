@@ -1,3 +1,5 @@
+import type { PaginatedResponse } from '@/common/type/api.type.ts';
+
 export type CategoryType = 'income' | 'expense';
 
 export type Category = {
@@ -13,6 +15,19 @@ export type Category = {
 };
 
 export type CategoryTab = 'all' | 'expense' | 'income' | 'deleted';
+
+export type CategoryTabCounts = {
+	all: number;
+	expense: number;
+	income: number;
+	deleted: number;
+};
+
+export type CategoryPaginatedResponse = PaginatedResponse<Category> & {
+	meta: {
+		counts: CategoryTabCounts;
+	};
+};
 
 export type CategoryParams = {
 	tab: CategoryTab;
