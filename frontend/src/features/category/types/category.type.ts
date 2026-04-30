@@ -13,3 +13,8 @@ export type Category = {
 };
 
 export type CategoryTab = 'all' | 'expense' | 'income' | 'deleted';
+
+export type CategoryParams = {
+	tab: CategoryTab;
+	search: string;
+};

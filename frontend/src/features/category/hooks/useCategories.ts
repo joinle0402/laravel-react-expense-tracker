@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { categoryService } from "@/features/category/services/category.service";
+import { useQuery } from '@tanstack/react-query';
+import { categoryService } from '@/features/category/services/category.service';
+import type { CategoryParams } from '@/features/category/types/category.type.ts';
 
-export function useCategories() {
-    return useQuery({
-        queryKey: ['categories'],
-        queryFn: categoryService.findAll
-    });
+export function useCategories(params: CategoryParams) {
+	return useQuery({
+		queryKey: ['categories', { params }],
+		queryFn: () => categoryService.findAll(params),
+		placeholderData: previousData => previousData,
+	});
 }

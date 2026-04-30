@@ -13,8 +13,21 @@ class CategoryController extends Controller
     {
         return Category::query()
             ->visibleTo(auth()->id())
+            ->when($request->filled('tab'), function ($query, $tab) use ($request) {
+                if ($request->tab == 'income') {
+                    $query->where('type', 'income');
+                } else if ($request->tab == 'expense') {
+                    $query->where('type', 'expense');
+                } else if ($request->tab == 'deleted') {
+                    $query->whereNotNull('deleted_at');
+                }
+            })
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = trim($request->search);
+                $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%{$search}%"]);
+            })
             ->when($request->filled('type'), fn ($query) => $query->where('type', $request->type))
-            ->paginate($request->integer('limit', 50));
+            ->paginate($request->integer('size', 50));
     }
 
     public function store(StoreCategoryRequest $request)

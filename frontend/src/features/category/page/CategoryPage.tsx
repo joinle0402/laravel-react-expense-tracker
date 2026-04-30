@@ -28,21 +28,26 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { useConfirmDialog } from '@/common/hooks/useConfirmDialog.ts';
 import { useCategories } from '@/features/category/hooks/useCategories.ts';
 import Tooltip from '@mui/material/Tooltip';
+import useDebounce from '@/common/hooks/useDebounce.ts';
+import CircularProgress from '@mui/material/CircularProgress';
+import LoaddingRow from '@/common/components/table/LoaddingRow.tsx';
+import EmptyRow from '@/common/components/table/EmptyRow.tsx';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
 	const [search, setSearch] = useState<string>('');
+	const debouncedSearch = useDebounce(search);
 	const { deleteConfirm } = useConfirmDialog();
-	const { data: response = [] } = useCategories();
+	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim() });
 
 	const handleDeleteCategory = async (category: Category) => {
 		const confirmed = await deleteConfirm({
 			title: `Xóa danh mục "${category.name}"?`,
 			warning: 'Danh mục này sẽ không còn xuất hiện khi tạo giao dịch mới. Các giao dịch cũ dùng danh mục này vẫn được giữ nguyên.',
 			message: 'Hành động này chỉ đánh dấu danh mục là đã xóa, không xóa giao dịch cũ.',
-			maxWidth: 'sm'
+			maxWidth: 'sm',
 		});
-		console.log({ confirmed });
+		console.log('-', confirmed);
 	};
 
 	return (
@@ -70,7 +75,7 @@ export default function CategoryPage() {
 						</Tabs>
 					</Grid>
 					<Grid size={6}>
-						<Stack direction="row" spacing={1} sx={{ alignItems: "center", minHeight: 40 }}>
+						<Stack direction="row" spacing={1} sx={{ alignItems: 'center', minHeight: 40 }}>
 							<TextField
 								fullWidth
 								size="small"
@@ -84,6 +89,11 @@ export default function CategoryPage() {
 												<SearchIcon fontSize="small" />
 											</InputAdornment>
 										),
+										endAdornment: isFetching ? (
+											<InputAdornment position="end">
+												<CircularProgress size={18} />
+											</InputAdornment>
+										) : null,
 									},
 								}}
 								sx={{ flex: 1, minWidth: 260 }}
@@ -100,85 +110,167 @@ export default function CategoryPage() {
 							<Table stickyHeader>
 								<TableHead>
 									<TableRow>
-										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '10px',  }}>#</TableCell>
-										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '35%',  }}>Tên danh mục</TableCell>
-										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '160px', }}>Loại </TableCell>
-										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '160px', }}>Nguồn</TableCell>
-										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '160px', }}>Trạng thái</TableCell>
-										<TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: 700, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', minWidth: '100px', }} align="right">
+										<TableCell
+											sx={{
+												bgcolor: '#F8FAFC',
+												fontWeight: 700,
+												fontSize: 12,
+												color: 'text.secondary',
+												textTransform: 'uppercase',
+												minWidth: '10px',
+											}}
+										>
+											#
+										</TableCell>
+										<TableCell
+											sx={{
+												bgcolor: '#F8FAFC',
+												fontWeight: 700,
+												fontSize: 12,
+												color: 'text.secondary',
+												textTransform: 'uppercase',
+												minWidth: '35%',
+											}}
+										>
+											Tên danh mục
+										</TableCell>
+										<TableCell
+											sx={{
+												bgcolor: '#F8FAFC',
+												fontWeight: 700,
+												fontSize: 12,
+												color: 'text.secondary',
+												textTransform: 'uppercase',
+												minWidth: '160px',
+											}}
+										>
+											Loại{' '}
+										</TableCell>
+										<TableCell
+											sx={{
+												bgcolor: '#F8FAFC',
+												fontWeight: 700,
+												fontSize: 12,
+												color: 'text.secondary',
+												textTransform: 'uppercase',
+												minWidth: '160px',
+											}}
+										>
+											Nguồn
+										</TableCell>
+										<TableCell
+											sx={{
+												bgcolor: '#F8FAFC',
+												fontWeight: 700,
+												fontSize: 12,
+												color: 'text.secondary',
+												textTransform: 'uppercase',
+												minWidth: '160px',
+											}}
+										>
+											Trạng thái
+										</TableCell>
+										<TableCell
+											sx={{
+												bgcolor: '#F8FAFC',
+												fontWeight: 700,
+												fontSize: 12,
+												color: 'text.secondary',
+												textTransform: 'uppercase',
+												minWidth: '100px',
+											}}
+											align="right"
+										>
 											Hành động
 										</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{response?.data?.map((category: Category, index: number) => (
-										<TableRow hover key={index} sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' }, '&:last-child td': { borderBottom: 0 } }}>
-											<TableCell>{index + 1}</TableCell>
-											<TableCell>
-												<Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-													<Avatar
+									{isLoading ? (
+										<LoaddingRow colSpan={6} />
+									) : response?.data?.length == 0 ? (
+										<EmptyRow colSpan={6} search={debouncedSearch} />
+									) : (
+										response?.data?.map((category: Category, index: number) => (
+											<TableRow
+												hover
+												key={index}
+												sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' }, '&:last-child td': { borderBottom: 0 } }}
+											>
+												<TableCell>{index + 1}</TableCell>
+												<TableCell>
+													<Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+														<Avatar
+															sx={{
+																width: 36,
+																height: 36,
+																bgcolor: category.type === 'income' ? 'success.light' : 'error.light',
+																color: 'white',
+															}}
+														>
+															{category.type === 'income' ? (
+																<TrendingUpIcon fontSize="small" />
+															) : (
+																<ReceiptLongIcon fontSize="small" />
+															)}
+														</Avatar>
+														<Typography sx={{ fontWeight: 600 }}>{category.name}</Typography>
+													</Stack>
+												</TableCell>
+												<TableCell>
+													<Chip
+														size="small"
+														label={category.type === 'income' ? 'Thu nhập' : 'Chi tiêu'}
+														color={category.type === 'income' ? 'success' : 'error'}
+														variant="outlined"
+													/>
+												</TableCell>
+												<TableCell>
+													<Chip
+														size="small"
+														label={category.is_system ? 'Hệ thống' : 'Cá nhân'}
+														color={category.is_system ? 'default' : 'primary'}
+														variant={category.is_system ? 'outlined' : 'filled'}
+													/>
+												</TableCell>
+												<TableCell>
+													<Chip
+														size="small"
+														label={category.is_deleted ? 'Đã xóa' : 'Hoạt động'}
+														color={category.is_deleted ? 'default' : 'success'}
 														sx={{
-															width: 36,
-															height: 36,
-															bgcolor: category.type === 'income' ? 'success.light' : 'error.light',
-															color: 'white',
+															height: 24,
+															fontWeight: 600,
+															bgcolor: category.is_deleted ? 'default' : 'success.50',
+															color: category.is_deleted ? 'default' : 'success.700',
 														}}
-													>
-														{category.type === 'income' ? (
-															<TrendingUpIcon fontSize="small" />
-														) : (
-															<ReceiptLongIcon fontSize="small" />
-														)}
-													</Avatar>
-													<Typography sx={{ fontWeight: 600 }}>{category.name}</Typography>
-												</Stack>
-											</TableCell>
-											<TableCell>
-												<Chip
-													size="small"
-													label={category.type === 'income' ? 'Thu nhập' : 'Chi tiêu'}
-													color={category.type === 'income' ? 'success' : 'error'}
-													variant="outlined"
-												/>
-											</TableCell>
-											<TableCell>
-												<Chip
-													size="small"
-													label={category.is_system ? 'Hệ thống' : 'Cá nhân'}
-													color={category.is_system ? 'default' : 'primary'}
-													variant={category.is_system ? 'outlined' : 'filled'}
-												/>
-											</TableCell>
-											<TableCell>
-												<Chip
-													size="small"
-													label={category.is_deleted ? 'Đã xóa' : 'Hoạt động'}
-													color={category.is_deleted ? 'default' : 'success'}
-													sx={{
-														height: 24,
-														fontWeight: 600,
-														bgcolor: category.is_deleted ? 'default' : 'success.50',
-														color: category.is_deleted ? 'default' : 'success.700',
-													}}
-												/>
-											</TableCell>
-											<TableCell align="right">
-												<Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
-													<Tooltip title="Sửa danh mục">
-														<IconButton size="small" color="primary">
-															<EditIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
+													/>
+												</TableCell>
+												<TableCell align="right">
+													<Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
+														<Tooltip title="Sửa danh mục">
+															<IconButton size="small" color="primary">
+																<EditIcon fontSize="small" />
+															</IconButton>
+														</Tooltip>
 
-													<Tooltip title={category.is_system ? 'Không thể xóa danh mục hệ thống' : 'Xóa danh mục'}>
-														<IconButton size="small" color="error" disabled={category.is_system} onClick={() => handleDeleteCategory(category)}>
-															<DeleteIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												</Stack>
-											</TableCell>
-										</TableRow>
-									))}
+														<Tooltip title={category.is_system ? 'Không thể xóa danh mục hệ thống' : 'Xóa danh mục'}>
+															<span>
+																<IconButton
+																	size="small"
+																	color="error"
+																	disabled={category.is_system}
+																	onClick={() => handleDeleteCategory(category)}
+																>
+																	<DeleteIcon fontSize="small" />
+																</IconButton>
+															</span>
+														</Tooltip>
+													</Stack>
+												</TableCell>
+											</TableRow>
+										))
+									)}
 								</TableBody>
 							</Table>
 						</TableContainer>

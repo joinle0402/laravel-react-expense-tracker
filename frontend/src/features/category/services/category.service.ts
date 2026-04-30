@@ -1,9 +1,9 @@
 import { http } from '@/common/libs/axios';
-import type { Pagination } from '@/common/type/api.type.ts';
-import type { Category } from '@/features/category/types/category.type.ts';
+import type { PaginatedResponse } from '@/common/type/api.type.ts';
+import type { Category, CategoryParams } from '@/features/category/types/category.type.ts';
 
 export const categoryService = {
-	findAll(): Promise<Pagination<Category>> {
-		return http.get<Pagination<Category>>('/categories');
+	findAll(params: CategoryParams): Promise<PaginatedResponse<Category>> {
+		return http.get<PaginatedResponse<Category>>('/categories', { params });
 	},
 };
