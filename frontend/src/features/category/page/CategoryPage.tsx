@@ -9,25 +9,18 @@ import useCategories from '@/features/category/hooks/useCategories.ts';
 import useConfirmDialog from '@/common/hooks/useConfirmDialog.ts';
 import CategoryToolbar from '@/features/category/components/CategoryToolbar.tsx';
 import CategoryTable from '@/features/category/components/CategoryTable.tsx';
+import useDeleteCategory from '@/features/category/hooks/useDeleteCategory.ts';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
 	const [search, setSearch] = useState<string>('');
 	const [page, setPage] = useState<number>(0);
 	const [limit, setLimit] = useState<number>(10);
-	const debouncedSearch = useDebounce(search);
+	const debouncedSearch = useDebounce(search.trim());
 	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim(), page: page + 1, limit });
-	const counts = response?.meta?.counts;
+	const { mutateAsync: deleteCategory } = useDeleteCategory();
 	const { deleteConfirm } = useConfirmDialog();
-	const handleButtonDeleteClick = async (category: Category) => {
-		const confirmed = await deleteConfirm({
-			title: `Xóa danh mục "${category.name}"?`,
-			warning: 'Danh mục này sẽ không còn xuất hiện khi tạo giao dịch mới. Các giao dịch cũ dùng danh mục này vẫn được giữ nguyên.',
-			message: 'Hành động này chỉ đánh dấu danh mục là đã xóa, không xóa giao dịch cũ.',
-			maxWidth: 'sm',
-		});
-		console.log('-', confirmed);
-	};
+	const counts = response?.meta?.counts;
 
 	const handlePageChange = (_event: MouseEvent<HTMLButtonElement> | null, page: number) => setPage(page);
 
@@ -36,19 +29,28 @@ export default function CategoryPage() {
 		setPage(0);
 	};
 
-	const handleButtonEditClick = async (category: Category) => {
-		console.log('handleButtonEditCategoryClick', category);
-	};
-
 	const handleTabChange = (_event: SyntheticEvent, value: CategoryTab) => {
-		console.log(value);
 		setTab(value);
 		setPage(0);
 	};
+
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		console.log(event.target.value);
 		setSearch(event.target.value);
 		setPage(0);
+	};
+
+	const handleDeleteClick = async (category: Category) => {
+		await deleteConfirm({
+			title: `Xóa danh mục "${category.name}"?`,
+			warning: 'Danh mục này sẽ không còn xuất hiện khi tạo giao dịch mới. Các giao dịch cũ dùng danh mục này vẫn được giữ nguyên.',
+			message: 'Hành động này chỉ đánh dấu danh mục là đã xóa, không xóa giao dịch cũ.',
+			maxWidth: 'sm',
+			onConfirm: () => deleteCategory(category.id),
+		});
+	};
+
+	const handleEditClick = async (category: Category) => {
+		console.log('handleEditClick', category);
 	};
 
 	return (
@@ -69,23 +71,23 @@ export default function CategoryPage() {
 				<CategoryToolbar
 					tab={tab}
 					onTabChange={handleTabChange}
-					search={debouncedSearch.trim()}
+					search={search}
 					onSearchChange={handleSearchChange}
 					counts={counts}
 					isFetching={isFetching}
 				/>
 
 				<CategoryTable
-					totalItems={response?.total || 0}
+					totalItems={response?.total ?? 0}
 					isLoading={isLoading}
 					categories={response?.data ?? []}
-					search={debouncedSearch}
+					search={search}
 					page={page}
 					limit={limit}
 					onPageChange={handlePageChange}
 					onRowsPerPageChange={handleRowsPerPageChange}
-					onDelete={handleButtonDeleteClick}
-					onEdit={handleButtonEditClick}
+					onDelete={handleDeleteClick}
+					onEdit={handleEditClick}
 				/>
 			</Paper>
 		</Box>

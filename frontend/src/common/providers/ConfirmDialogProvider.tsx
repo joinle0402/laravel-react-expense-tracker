@@ -8,6 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import type { ConfirmDialogOptions, ConfirmDialogState } from '@/common/type/confirm-dialog.type.ts';
 import { ConfirmDialogContext } from '@/common/context/ConfirmDialogContext';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const defaultState: ConfirmDialogState = {
 	open: false,
@@ -22,13 +23,24 @@ const defaultState: ConfirmDialogState = {
 
 export default function ConfirmDialogProvider({ children }: { children: ReactNode }) {
 	const [state, setState] = useState<ConfirmDialogState>(defaultState);
+	const [confirmLoading, setConfirmLoading] = useState(false);
 	const resolverRef = useRef<((value: boolean) => void) | null>(null);
+
+	const closeDialog = (result: boolean) => {
+		resolverRef.current?.(result);
+		resolverRef.current = null;
+		setConfirmLoading(false);
+		setState(prevState => ({ ...prevState, open: false }));
+	};
+
 	const confirm = (options: ConfirmDialogOptions) => {
+		setConfirmLoading(false);
 		setState({ ...defaultState, ...options, open: true });
 		return new Promise<boolean>(resolve => {
 			resolverRef.current = resolve;
 		});
 	};
+
 	const deleteConfirm = (options: ConfirmDialogOptions) => {
 		return confirm({
 			title: 'Xoá thông tin',
@@ -40,14 +52,23 @@ export default function ConfirmDialogProvider({ children }: { children: ReactNod
 	};
 
 	const handleButtonCloseClick = () => {
-		resolverRef.current?.(false);
-		resolverRef.current = null;
-		setState(prevState => ({ ...prevState, open: false }));
+		if (confirmLoading) return;
+		closeDialog(false);
 	};
-	const handleButtonConfirmClick = () => {
-		resolverRef.current?.(true);
-		resolverRef.current = null;
-		setState(prevState => ({ ...prevState, open: false }));
+
+	const handleButtonConfirmClick = async () => {
+		if (confirmLoading) return;
+		if (!state.onConfirm) {
+			closeDialog(true);
+			return;
+		}
+		try {
+			setConfirmLoading(true);
+			await state.onConfirm();
+			closeDialog(true);
+		} catch {
+			setConfirmLoading(false);
+		}
 	};
 
 	return (
@@ -70,8 +91,14 @@ export default function ConfirmDialogProvider({ children }: { children: ReactNod
 				<DialogActions sx={{ px: 3, pb: 2 }}>
 					<Button onClick={handleButtonCloseClick}>{state.cancelText}</Button>
 
-					<Button color={state.confirmColor} variant="contained" onClick={handleButtonConfirmClick}>
-						{state.confirmText}
+					<Button
+						color={state.confirmColor}
+						variant="contained"
+						onClick={handleButtonConfirmClick}
+						disabled={confirmLoading}
+						startIcon={confirmLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
+					>
+						{confirmLoading ? 'Đang xử lý...' : state.confirmText}
 					</Button>
 				</DialogActions>
 			</Dialog>

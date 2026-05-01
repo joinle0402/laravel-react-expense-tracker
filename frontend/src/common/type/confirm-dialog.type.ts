@@ -10,6 +10,7 @@ export type ConfirmDialogOptions = {
 	cancelText?: string;
 	confirmColor?: ButtonProps['color'];
 	maxWidth?: DialogProps['maxWidth'];
+	onConfirm?: () => void | Promise<unknown>;
 };
 
 export type ConfirmDialogValue = {
