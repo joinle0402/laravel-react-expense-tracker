@@ -67,8 +67,8 @@ class CategorySeeder extends Seeder
                     'user_id' => User::where('email', 'johnsmith2001it@gmail.com')->first()->id,
                 ],
                 [
-                    'is_system' => random_int(0, 1),
-                    'deleted_at' => null,
+                    'is_system' => (bool) rand(0, 1),
+                    'deleted_at' => rand(0, 1) ? now()->subDays(rand(1, 30)) : null,
                 ]
             );
         }
