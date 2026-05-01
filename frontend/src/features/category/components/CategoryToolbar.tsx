@@ -31,33 +31,62 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 	] as const;
 
 	return (
-		<Grid container spacing={2} sx={{ alignItems: 'center' }}>
-			<Grid size={6}>
-				<Tabs value={tab} onChange={(_, value) => onTabChange(value)} sx={{ mb: 2 }}>
+		<Grid container spacing={2} sx={{ alignItems: 'center', mb: 1 }}>
+			<Grid size={{ xs: 12, md: 6 }}>
+				<Tabs
+					value={tab}
+					onChange={(_, value) => onTabChange(value)}
+					sx={{
+						minHeight: 44,
+						height: 44,
+
+						'& .MuiTabs-indicator': {
+							height: 3,
+							borderRadius: 999,
+						},
+
+						'& .MuiTab-root': {
+							minHeight: 44,
+							height: 44,
+							textTransform: 'none',
+							fontWeight: 700,
+							color: 'text.secondary',
+						},
+
+						'& .Mui-selected': {
+							color: 'primary.main',
+						},
+					}}
+				>
 					{tabs.map(item => (
 						<Tab
 							key={item.value}
 							value={item.value}
 							label={
 								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-									<Typography variant="body2" sx={{ fontWeight: 600 }}>
+									<Typography variant="body2" sx={{ fontWeight: 700 }}>
 										{item.label}
 									</Typography>
 									{counts && (
-										<Typography
-											variant="caption"
+										<Box
+											component="span"
 											sx={{
+												minWidth: 22,
+												height: 22,
 												px: 0.75,
-												py: 0.15,
-												borderRadius: 10,
-												bgcolor: 'action.hover',
-												color: 'text.secondary',
-												fontWeight: 600,
-												lineHeight: 1.4,
+												borderRadius: 999,
+												bgcolor: tab === item.value ? 'primary.700' : 'action.hover',
+												color: tab === item.value ? 'primary.main' : 'text.secondary',
+												fontSize: 12,
+												fontWeight: 700,
+												display: 'inline-flex',
+												alignItems: 'center',
+												justifyContent: 'center',
+												lineHeight: 1,
 											}}
 										>
 											{counts[item.value] || 0}
-										</Typography>
+										</Box>
 									)}
 								</Box>
 							}
@@ -65,8 +94,8 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 					))}
 				</Tabs>
 			</Grid>
-			<Grid size={6}>
-				<Stack direction="row" spacing={1} sx={{ alignItems: 'center', minHeight: 40 }}>
+			<Grid size={{ xs: 12, md: 6 }}>
+				<Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', minHeight: 38 }}>
 					<TextField
 						fullWidth
 						size="small"
@@ -87,9 +116,17 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 								) : null,
 							},
 						}}
-						sx={{ flex: 1, minWidth: 260 }}
+						sx={{
+							flex: 1,
+							maxWidth: 560,
+							minWidth: 260,
+
+							'& .MuiInputBase-root': {
+								height: 38,
+							},
+						}}
 					/>
-					<Button variant="contained" startIcon={<AddIcon />} sx={{ minHeight: 40 }}>
+					<Button variant="contained" startIcon={<AddIcon />} sx={{ minHeight: 38 }}>
 						Tạo danh mục
 					</Button>
 				</Stack>

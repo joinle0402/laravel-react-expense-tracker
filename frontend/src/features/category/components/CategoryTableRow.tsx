@@ -27,8 +27,8 @@ export default function CategoryTableRow({ index, category, onDelete, onEdit }: 
 				<Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
 					<Avatar
 						sx={{
-							width: 36,
-							height: 36,
+							width: 24,
+							height: 24,
 							bgcolor: category.type === 'income' ? 'success.light' : 'error.light',
 							color: 'white',
 						}}
@@ -58,12 +58,12 @@ export default function CategoryTableRow({ index, category, onDelete, onEdit }: 
 				<Chip
 					size="small"
 					label={category.is_deleted ? 'Đã xóa' : 'Hoạt động'}
-					color={category.is_deleted ? 'default' : 'success'}
+					color={category.is_deleted ? 'error' : 'success'}
 					sx={{
 						height: 24,
 						fontWeight: 600,
-						bgcolor: category.is_deleted ? 'default' : 'success.50',
-						color: category.is_deleted ? 'default' : 'success.700',
+						bgcolor: category.is_deleted ? 'error.50' : 'success.50',
+						color: category.is_deleted ? 'error.700' : 'success.700',
 					}}
 				/>
 			</TableCell>

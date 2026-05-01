@@ -11,10 +11,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import Drawer from '@mui/material/Drawer';
-import { DRAWER_WIDTH_CLOSED, DRAWER_WIDTH_OPEN } from '@/common/contants/layout.contants.ts';
+import { DRAWER_WIDTH_CLOSED, DRAWER_WIDTH_OPEN, HEADER_HEIGHT } from '@/common/contants/layout.contants.ts';
 import { getStoredUser } from '@/features/auth/store/auth-store.ts';
 import { getAvatarColor, getAvatarShortName } from '@/common/utils/avatar.ts';
 import { useTheme } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 
 type SidebarItem = {
 	label: string;
@@ -97,7 +98,7 @@ export default function Sidebar({ open }: SidebarProps) {
 				>
 					<Toolbar
 						sx={{
-							minHeight: '72px !important',
+							minHeight: HEADER_HEIGHT + 'px !important',
 							px: open ? 2 : '12px!important',
 							display: 'flex',
 							alignItems: 'center',
@@ -139,28 +140,29 @@ export default function Sidebar({ open }: SidebarProps) {
 										? location.pathname === '/' || location.pathname === '/dashboard'
 										: location.pathname.startsWith(item.path);
 								return (
-									<ListItemButton
-										key={item.path}
-										component={NavLink}
-										to={item.path}
-										sx={{
-											mb: 0.75,
-											borderRadius: 2,
-											minHeight: 46,
-											color: active ? 'primary.main' : 'text.secondary',
-											bgcolor: active ? 'action.selected' : 'transparent',
-											'&:hover': {
-												bgcolor: active ? 'action.selected' : 'action.hover',
-											},
-											'& .MuiListItemIcon-root': {
+									<Tooltip key={item.path} title={open ? false : item.label} placement="right">
+										<ListItemButton
+											component={NavLink}
+											to={item.path}
+											sx={{
+												mb: 0.75,
+												borderRadius: 2,
+												minHeight: 46,
 												color: active ? 'primary.main' : 'text.secondary',
-												minWidth: 40,
-											},
-										}}
-									>
-										<ListItemIcon>{item.icon}</ListItemIcon>
-										{open && <ListItemText>{item.label}</ListItemText>}
-									</ListItemButton>
+												bgcolor: active ? 'action.selected' : 'transparent',
+												'&:hover': {
+													bgcolor: active ? 'action.selected' : 'action.hover',
+												},
+												'& .MuiListItemIcon-root': {
+													color: active ? 'primary.main' : 'text.secondary',
+													minWidth: 40,
+												},
+											}}
+										>
+											<ListItemIcon>{item.icon}</ListItemIcon>
+											{open && <ListItemText>{item.label}</ListItemText>}
+										</ListItemButton>
+									</Tooltip>
 								);
 							})}
 						</List>

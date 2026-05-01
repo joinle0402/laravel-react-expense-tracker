@@ -32,7 +32,7 @@ export default function CategoryTable({ categories, isLoading, search, onDelete,
 		<Grid container>
 			<Grid size={12}>
 				<TableContainer component={Paper} variant="elevation" sx={{ maxHeight: 'calc(100vh - 360px)' }}>
-					<Table stickyHeader>
+					<Table stickyHeader size="small">
 						<TableHead>
 							<TableRow>
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '10px' }}>#</TableCell>

@@ -27,7 +27,7 @@ class CategoryController extends Controller
             ->when($request->filled('search'), function ($query) use ($request) {
                 $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%{".trim($request->search)."}%"]);
             })
-            ->paginate($request->integer('size', 50));
+            ->paginate($request->integer('size', 20));
         return response()->json([
             ...$categories->toArray(),
             'meta' => [

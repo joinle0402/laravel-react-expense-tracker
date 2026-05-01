@@ -14,6 +14,12 @@ class Category extends Model
     protected $table = 'categories';
     protected $fillable = ['user_id', 'name', 'type', 'is_system'];
     protected $casts = ['is_system' => 'boolean', 'deleted_at' => 'datetime'];
+    protected $appends = ['is_deleted'];
+
+    public function getIsDeletedAttribute(): bool
+    {
+        return !empty($this->deleted_at);
+    }
 
     public function user(): BelongsTo
     {
