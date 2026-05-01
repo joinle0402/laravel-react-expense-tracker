@@ -27,7 +27,6 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 		{ value: 'all', label: 'Tất cả' },
 		{ value: 'expense', label: 'Chi tiêu' },
 		{ value: 'income', label: 'Thu nhập' },
-		{ value: 'deleted', label: 'Đã xóa' },
 	] as const;
 
 	return (
@@ -118,7 +117,7 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 						}}
 						sx={{
 							flex: 1,
-							maxWidth: 560,
+							maxWidth: 300,
 							minWidth: 260,
 
 							'& .MuiInputBase-root': {

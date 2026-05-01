@@ -6,21 +6,17 @@ export type Category = {
 	id: string;
 	name: string;
 	type: CategoryType;
-	is_system: boolean;
-	is_deleted: boolean;
 	user_id: number;
-	deleted_at?: string | null;
 	created_at: string;
 	updated_at: string;
 };
 
-export type CategoryTab = 'all' | 'expense' | 'income' | 'deleted';
+export type CategoryTab = 'all' | 'expense' | 'income';
 
 export type CategoryTabCounts = {
 	all: number;
 	expense: number;
 	income: number;
-	deleted: number;
 };
 
 export type CategoryPaginatedResponse = PaginatedResponse<Category> & {

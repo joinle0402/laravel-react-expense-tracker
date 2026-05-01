@@ -46,27 +46,6 @@ export default function CategoryTableRow({ index, category, onDelete, onEdit }: 
 					variant="outlined"
 				/>
 			</TableCell>
-			<TableCell>
-				<Chip
-					size="small"
-					label={category.is_system ? 'Hệ thống' : 'Cá nhân'}
-					color={category.is_system ? 'default' : 'primary'}
-					variant={category.is_system ? 'outlined' : 'filled'}
-				/>
-			</TableCell>
-			<TableCell>
-				<Chip
-					size="small"
-					label={category.is_deleted ? 'Đã xóa' : 'Hoạt động'}
-					color={category.is_deleted ? 'error' : 'success'}
-					sx={{
-						height: 24,
-						fontWeight: 600,
-						bgcolor: category.is_deleted ? 'error.50' : 'success.50',
-						color: category.is_deleted ? 'error.700' : 'success.700',
-					}}
-				/>
-			</TableCell>
 			<TableCell align="right">
 				<Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
 					<Tooltip title="Sửa danh mục" onClick={() => onEdit(category)}>
@@ -75,9 +54,9 @@ export default function CategoryTableRow({ index, category, onDelete, onEdit }: 
 						</IconButton>
 					</Tooltip>
 
-					<Tooltip title={category.is_system ? 'Không thể xóa danh mục hệ thống' : 'Xóa danh mục'}>
+					<Tooltip title={'Xóa danh mục'}>
 						<span>
-							<IconButton size="small" color="error" disabled={category.is_system} onClick={() => onDelete(category)}>
+							<IconButton size="small" color="error" onClick={() => onDelete(category)}>
 								<DeleteIcon fontSize="small" />
 							</IconButton>
 						</span>

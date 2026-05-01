@@ -14,8 +14,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->nullOnDelete();
             $table->string('name');
             $table->enum('type', ['income', 'expense']);
-            $table->boolean('is_system')->default(false);
-            $table->softDeletes();
             $table->timestamps();
         });
     }

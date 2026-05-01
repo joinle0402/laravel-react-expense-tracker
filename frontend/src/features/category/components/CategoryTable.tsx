@@ -60,8 +60,6 @@ export default function CategoryTable({
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '10px' }}>#</TableCell>
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '35%' }}>Tên danh mục</TableCell>
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '160px' }}>Loại </TableCell>
-								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '160px' }}>Nguồn</TableCell>
-								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '160px' }}>Trạng thái</TableCell>
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '100px' }} align="right">
 									Hành động
 								</TableCell>

@@ -21,7 +21,6 @@ class StoreCategoryRequest extends FormRequest
                     ->where(fn ($query) => $query
                         ->where('user_id', auth()->id())
                         ->where('type', $this->input('type'))
-                        ->whereNull('deleted_at')
                     ),
             ],
             'type' => 'required|string|in:income,expense',

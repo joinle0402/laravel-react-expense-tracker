@@ -11,31 +11,18 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $baseQuery = Category::visibleTo(auth()->id());
-        $counts = (clone $baseQuery)
-            ->withTrashed()
-            ->selectRaw("
-                COUNT(CASE WHEN deleted_at IS NULL THEN 1 END) as all_count,
-                COUNT(CASE WHEN type = 'expense' AND deleted_at IS NULL THEN 1 END) as expense_count,
-                COUNT(CASE WHEN type = 'income' AND deleted_at IS NULL THEN 1 END) as income_count,
-                COUNT(CASE WHEN deleted_at IS NOT NULL THEN 1 END) as deleted_count
-            ")
-            ->first();
-        $categories = (clone $baseQuery)
-            ->filterTab($request->tab)
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%".trim($request->search)."%"]);
-            })
-            ->paginate($request->integer('limit', 20));
         return response()->json([
-            ...$categories->toArray(),
+            ...Category::where('user_id', auth()->id())
+                ->when($request->filled('tab'))
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%".trim($request->search)."%"]);
+                })
+                ->paginate($request->integer('limit', 20))
+                ->toArray(),
             'meta' => [
-                'counts' => [
-                    'all' => (int) $counts->all_count,
-                    'expense' => (int) $counts->expense_count,
-                    'income' => (int) $counts->income_count,
-                    'deleted' => (int) $counts->deleted_count,
-                ],
+                'counts' => Category::where('user_id', auth()->id())
+                    ->selectRaw("COUNT(1) AS `all`, SUM(type = 'expense') AS `expense`, SUM(type = 'income') AS `income`")
+                    ->first(),
             ],
         ]);
     }
@@ -48,7 +35,6 @@ class CategoryController extends Controller
                 'name' => $request->validated('name'),
                 'type' => $request->validated('type'),
                 'user_id' => auth()->id(),
-                'is_system' => false,
             ])
         ]);
     }
