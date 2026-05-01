@@ -22,12 +22,11 @@ class CategoryController extends Controller
             ")
             ->first();
         $categories = (clone $baseQuery)
-            ->withTrashed()
             ->filterTab($request->tab)
             ->when($request->filled('search'), function ($query) use ($request) {
-                $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%{".trim($request->search)."}%"]);
+                $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%".trim($request->search)."%"]);
             })
-            ->paginate($request->integer('size', 20));
+            ->paginate($request->integer('limit', 20));
         return response()->json([
             ...$categories->toArray(),
             'meta' => [

@@ -10,15 +10,15 @@ import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
-import type { Dispatch, SetStateAction } from 'react';
+import type { ChangeEvent, SyntheticEvent } from 'react';
 import type { CategoryTab, CategoryTabCounts } from '@/features/category/types/category.type';
 
 interface CategoryToolbarProps {
 	tab: string;
-	onTabChange: Dispatch<SetStateAction<CategoryTab>>;
+	onTabChange: (event: SyntheticEvent, value: CategoryTab) => void;
 	counts?: CategoryTabCounts | undefined;
 	search: string;
-	onSearchChange: Dispatch<SetStateAction<string>>;
+	onSearchChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void;
 	isFetching: boolean;
 }
 
@@ -35,7 +35,7 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 			<Grid size={{ xs: 12, md: 6 }}>
 				<Tabs
 					value={tab}
-					onChange={(_, value) => onTabChange(value)}
+					onChange={onTabChange}
 					sx={{
 						minHeight: 44,
 						height: 44,
@@ -101,7 +101,7 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 						size="small"
 						placeholder="Tìm kiếm danh mục..."
 						value={search}
-						onChange={e => onSearchChange(e.target.value)}
+						onChange={onSearchChange}
 						slotProps={{
 							input: {
 								startAdornment: (

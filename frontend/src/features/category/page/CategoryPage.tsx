@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type ChangeEvent, type MouseEvent, type SyntheticEvent, useState } from 'react';
 import type { Category, CategoryTab } from '@/features/category/types/category.type';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -13,8 +13,10 @@ import CategoryTable from '@/features/category/components/CategoryTable.tsx';
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
 	const [search, setSearch] = useState<string>('');
+	const [page, setPage] = useState<number>(0);
+	const [limit, setLimit] = useState<number>(10);
 	const debouncedSearch = useDebounce(search);
-	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim() });
+	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim(), page: page + 1, limit });
 	const counts = response?.meta?.counts;
 	const { deleteConfirm } = useConfirmDialog();
 	const handleButtonDeleteClick = async (category: Category) => {
@@ -27,8 +29,26 @@ export default function CategoryPage() {
 		console.log('-', confirmed);
 	};
 
+	const handlePageChange = (_event: MouseEvent<HTMLButtonElement> | null, page: number) => setPage(page);
+
+	const handleRowsPerPageChange = (event: ChangeEvent<HTMLInputElement>) => {
+		setLimit(parseInt(event.target.value, 10));
+		setPage(0);
+	};
+
 	const handleButtonEditClick = async (category: Category) => {
 		console.log('handleButtonEditCategoryClick', category);
+	};
+
+	const handleTabChange = (_event: SyntheticEvent, value: CategoryTab) => {
+		console.log(value);
+		setTab(value);
+		setPage(0);
+	};
+	const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		console.log(event.target.value);
+		setSearch(event.target.value);
+		setPage(0);
 	};
 
 	return (
@@ -48,17 +68,22 @@ export default function CategoryPage() {
 			<Paper sx={{ p: 2, borderRadius: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
 				<CategoryToolbar
 					tab={tab}
-					onTabChange={setTab}
+					onTabChange={handleTabChange}
 					search={debouncedSearch.trim()}
-					onSearchChange={setSearch}
+					onSearchChange={handleSearchChange}
 					counts={counts}
 					isFetching={isFetching}
 				/>
 
 				<CategoryTable
+					totalItems={response?.total || 0}
 					isLoading={isLoading}
 					categories={response?.data ?? []}
 					search={debouncedSearch}
+					page={page}
+					limit={limit}
+					onPageChange={handlePageChange}
+					onRowsPerPageChange={handleRowsPerPageChange}
 					onDelete={handleButtonDeleteClick}
 					onEdit={handleButtonEditClick}
 				/>

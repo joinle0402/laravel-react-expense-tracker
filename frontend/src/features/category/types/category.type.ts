@@ -32,4 +32,6 @@ export type CategoryPaginatedResponse = PaginatedResponse<Category> & {
 export type CategoryParams = {
 	tab: CategoryTab;
 	search: string;
+	page: number;
+	limit: number;
 };
