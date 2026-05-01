@@ -30,8 +30,8 @@ export default function Header({ sidebarOpen, sidebarWidth, onToggleSidebar }: H
 			}}
 		>
 			<Toolbar
+				variant="dense"
 				sx={{
-					minHeight: '72px !important',
 					px: {
 						xs: 2,
 						sm: 3,
@@ -42,7 +42,7 @@ export default function Header({ sidebarOpen, sidebarWidth, onToggleSidebar }: H
 				}}
 			>
 				<Tooltip title={sidebarOpen ? 'Thu nhỏ' : 'Phóng to'}>
-					<IconButton edge="start" onClick={onToggleSidebar}>
+					<IconButton size="small" edge="start" onClick={onToggleSidebar}>
 						<MenuIcon />
 					</IconButton>
 				</Tooltip>

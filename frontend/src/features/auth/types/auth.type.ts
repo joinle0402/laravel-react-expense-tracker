@@ -22,5 +22,7 @@ export interface AuthResponse {
 
 export interface VerifyEmailResponse {
 	message: string;
-	user: User;
+	data: {
+		user: User;
+	};
 }

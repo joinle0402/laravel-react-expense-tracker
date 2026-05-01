@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Alert } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
 export default function VerifyEmailPage() {
 	const navigate = useNavigate();
@@ -26,10 +26,9 @@ export default function VerifyEmailPage() {
 
 	const isVerifyMode = !!id && !!hash && !!expires && !!signature;
 	const hasVeriredEmail = !!currentUser?.email_verified_at;
-	console.log(hasVeriredEmail);
 
 	if (hasVeriredEmail) {
-		return <Navigate to="/admin/dashboard" />;
+		return <Navigate to="/admin/dashboard" replace={true} />;
 	}
 
 	useEffect(() => {
@@ -37,11 +36,12 @@ export default function VerifyEmailPage() {
 		verifyMutation.mutate(
 			{ id, hash, signature, expires },
 			{
-				onSuccess: (response) => {
+				onSuccess: response => {
 					toast.success(response.message);
-					setStoredUser(response.user);
+					setStoredUser(response.data.user);
+					navigate('/admin/dashboard', { replace: true });
 				},
-				onError: (error) => handleApiError({ error }),
+				onError: error => handleApiError({ error }),
 			},
 		);
 	}, []);
@@ -49,11 +49,11 @@ export default function VerifyEmailPage() {
 	const handleButtonResendClicked = async () => {
 		if (isCounting) return;
 		resendMutation.mutate(undefined, {
-			onSuccess: (response) => {
+			onSuccess: response => {
 				toast.success(response.message);
 				startCountDown();
 			},
-			onError: (error) => handleApiError({ error }),
+			onError: error => handleApiError({ error }),
 		});
 	};
 
@@ -80,7 +80,7 @@ export default function VerifyEmailPage() {
 				{isVerifyMode && (
 					<>
 						{verifyMutation.isPending && (
-							<Stack spacing={2}>
+							<Stack spacing={2} sx={{ justifyContent: 'center' }}>
 								<CircularProgress />
 								<Typography>Đang xác thực email...</Typography>
 							</Stack>
