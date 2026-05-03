@@ -9,6 +9,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import CircularProgress from '@mui/material/CircularProgress';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 import type { CategoryTab, CategoryTabCounts } from '@/features/category/types/category.type';
@@ -20,10 +21,22 @@ interface CategoryToolbarProps {
 	search: string;
 	onSearchChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void;
 	isFetching: boolean;
+	isExporting: boolean;
 	onCreate: () => void;
+	onExport: () => Promise<void>;
 }
 
-export default function CategoryToolbar({ tab, onTabChange, counts, search, onSearchChange, isFetching, onCreate }: CategoryToolbarProps) {
+export default function CategoryToolbar({
+	tab,
+	onTabChange,
+	counts,
+	search,
+	onSearchChange,
+	isFetching,
+	onCreate,
+	onExport,
+	isExporting = false,
+}: CategoryToolbarProps) {
 	const tabs = [
 		{ value: 'all', label: 'Tất cả' },
 		{ value: 'expense', label: 'Chi tiêu' },
@@ -126,6 +139,9 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 							},
 						}}
 					/>
+					<Button variant="outlined" startIcon={<FileDownloadOutlinedIcon />} onClick={onExport} disabled={isExporting || isFetching}>
+						{isExporting ? 'Đang xuất...' : 'Xuất excel'}
+					</Button>
 					<Button variant="contained" startIcon={<AddIcon />} onClick={onCreate} sx={{ minHeight: 38 }}>
 						Tạo danh mục
 					</Button>

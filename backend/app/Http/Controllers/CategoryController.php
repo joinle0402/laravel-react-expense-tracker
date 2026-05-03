@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CategoriesExport;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Exception;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CategoryController extends Controller
 {
@@ -25,6 +29,28 @@ class CategoryController extends Controller
                     ->first(),
             ],
         ]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function export(Request $request): BinaryFileResponse
+    {
+        $ids = collect($request->query('ids'))->map(fn ($id) => (int) trim($id))->filter(fn ($id) => $id > 0)->unique()->values()->all();
+        $query = Category::query()->where('user_id', auth()->id());
+        if (!empty($ids)) {
+            $categories = $query->whereIn('id', $ids)->get();
+        } else {
+            $tab = $request->query('tab', 'all');
+            $search = trim($request->query('search', ''));
+            $categories = $query->when(in_array($tab, ['expense', 'income']), fn ($q) => $q->where('type', $tab))
+                ->when($search, function ($query) use ($request, $search) {
+                    $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%$search%"]);
+                })
+                ->get();
+        }
+        return Excel::download(new CategoriesExport($categories), 'categories.xlsx');
     }
 
     public function store(StoreCategoryRequest $request)

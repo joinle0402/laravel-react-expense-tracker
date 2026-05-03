@@ -12,6 +12,7 @@ import CategoryTable from '@/features/category/components/CategoryTable.tsx';
 import useDeleteCategory from '@/features/category/hooks/useDeleteCategory.ts';
 import CategoryDialog from '@/features/category/components/CategoryDialog.tsx';
 import UseBulkDeleteCategories from '@/features/category/hooks/useBulkDeleteCategories.ts';
+import useExportCategories from '@/features/category/hooks/useExportCategories.ts';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
@@ -26,6 +27,7 @@ export default function CategoryPage() {
 	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim(), page: page + 1, limit });
 	const { mutateAsync: deleteCategory } = useDeleteCategory();
 	const { mutateAsync: bulkDeleteCategories } = UseBulkDeleteCategories();
+	const { mutateAsync: exportExcel, isPending: isExporting } = useExportCategories();
 	const { deleteConfirm } = useConfirmDialog();
 	const counts = response?.meta?.counts;
 
@@ -81,6 +83,16 @@ export default function CategoryPage() {
 		});
 	};
 
+	const handleExportExcel = async () => {
+		await exportExcel({
+			tab,
+			search: debouncedSearch.trim(),
+			page: page + 1,
+			limit,
+			ids: selectedIds.length > 0 ? selectedIds : undefined,
+		});
+	};
+
 	return (
 		<Box sx={{ p: 1 }}>
 			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
@@ -104,6 +116,8 @@ export default function CategoryPage() {
 					counts={counts}
 					isFetching={isFetching}
 					onCreate={handleCreateClick}
+					onExport={handleExportExcel}
+					isExporting={isExporting}
 				/>
 
 				<CategoryTable
