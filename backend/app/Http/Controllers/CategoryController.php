@@ -55,4 +55,13 @@ class CategoryController extends Controller
         $category->delete();
         return response(['message' => 'Xoá danh mục thành công!']);
     }
+
+    public function bulkDelete(Request $request)
+    {
+        throwIf(empty($request->ids) || !is_array($request->ids), "Vui lòng chọn danh mục cần xóa");
+        Category::query()->where('user_id', auth()->id())->whereIn('id', $request->ids)->delete();
+        return response()->json([
+            'message' => 'Xóa danh mục hàng loạt thành công.',
+        ]);
+    }
 }

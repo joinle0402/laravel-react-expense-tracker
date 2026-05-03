@@ -11,6 +11,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import InputField from '@/common/components/form/InputField.tsx';
 import OptionToggleField from '@/common/components/form/OptionToggleField.tsx';
 
@@ -61,18 +62,20 @@ export default function CategoryDialog({ open, lockType = false, mode, onClose, 
 		}
 	};
 
-	const onCancel = () => {
+	const handleDialogClose = () => {
+		if (isLoading) return;
 		reset();
 		onClose();
 	};
 
 	return (
-		<Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
+		<Dialog open={open} onClose={handleDialogClose} fullWidth maxWidth="sm">
 			<form onSubmit={handleSubmit(onSubmit)} noValidate>
 				<DialogTitle>{isEdit ? 'Cập nhật danh mục' : 'Thêm danh mục mới'}</DialogTitle>
 				<DialogContent sx={{ p: '16px 24px!important' }}>
 					<Stack spacing={2}>
 						<InputField
+							autoFocus
 							control={control}
 							disabled={isLoading}
 							name="name"
@@ -94,10 +97,15 @@ export default function CategoryDialog({ open, lockType = false, mode, onClose, 
 								},
 							]}
 						/>
+						{lockType && (
+							<Typography variant="caption" color="text.secondary">
+								Không thể thay đổi loại danh mục vì danh mục này đã được sử dụng trong giao dịch.
+							</Typography>
+						)}
 					</Stack>
 				</DialogContent>
 				<DialogActions sx={{ px: 3 }}>
-					<Button onClick={onCancel} disabled={isLoading}>
+					<Button onClick={handleDialogClose} disabled={isLoading}>
 						Hủy
 					</Button>
 
@@ -105,13 +113,13 @@ export default function CategoryDialog({ open, lockType = false, mode, onClose, 
 						type="submit"
 						variant="contained"
 						loading={isLoading}
-						loadingIndicator={isEdit ? 'Đang cập nhật...' : 'Đang tạo...'}
+						loadingIndicator={isEdit ? 'Đang lưu...' : 'Đang thêm...'}
 						sx={{
-							minWidth: isEdit ? 160 : 130,
+							minWidth: isEdit ? 150 : 150,
 							whiteSpace: 'nowrap',
 						}}
 					>
-						{isEdit ? 'Cập nhật' : 'Tạo'}
+						{isEdit ? 'Lưu thay đổi' : 'Thêm danh mục'}
 					</Button>
 				</DialogActions>
 			</form>

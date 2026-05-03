@@ -11,6 +11,7 @@ import CategoryToolbar from '@/features/category/components/CategoryToolbar.tsx'
 import CategoryTable from '@/features/category/components/CategoryTable.tsx';
 import useDeleteCategory from '@/features/category/hooks/useDeleteCategory.ts';
 import CategoryDialog from '@/features/category/components/CategoryDialog.tsx';
+import UseBulkDeleteCategories from '@/features/category/hooks/useBulkDeleteCategories.ts';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
@@ -19,10 +20,12 @@ export default function CategoryPage() {
 	const [limit, setLimit] = useState<number>(10);
 	const [openDialog, setOpenDialog] = useState<boolean>(false);
 	const [editCategory, setEditCategory] = useState<Category | null>(null);
+	const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
 	const debouncedSearch = useDebounce(search.trim());
 	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim(), page: page + 1, limit });
 	const { mutateAsync: deleteCategory } = useDeleteCategory();
+	const { mutateAsync: bulkDeleteCategories } = UseBulkDeleteCategories();
 	const { deleteConfirm } = useConfirmDialog();
 	const counts = response?.meta?.counts;
 
@@ -57,6 +60,22 @@ export default function CategoryPage() {
 		setEditCategory(category);
 	};
 
+	const handleSelectOne = (id: number) => {
+		setSelectedIds(prev => (prev.includes(id) ? prev.filter(selectedId => selectedId !== id) : [...prev, id]));
+	};
+
+	const handleSelectAll = (checked: boolean, ids: number[]) => {
+		setSelectedIds(prev => (checked ? Array.from(new Set([...prev, ...ids])) : prev.filter(id => !ids.includes(id))));
+	};
+
+	const handleBulkDelete = async () => {
+		if (selectedIds.length === 0) return;
+		await deleteConfirm({
+			title: `Bạn có chắc muốn xóa ${selectedIds.length} danh mục đã chọn không?`,
+			onConfirm: () => bulkDeleteCategories(selectedIds),
+		});
+	};
+
 	return (
 		<Box sx={{ p: 1 }}>
 			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
@@ -89,10 +108,14 @@ export default function CategoryPage() {
 					search={search}
 					page={page}
 					limit={limit}
+					selectedIds={selectedIds}
 					onPageChange={handlePageChange}
 					onRowsPerPageChange={handleRowsPerPageChange}
 					onDelete={handleDeleteClick}
 					onEdit={handleEditClick}
+					onSelectOne={handleSelectOne}
+					onSelectAll={handleSelectAll}
+					onBulkDelete={handleBulkDelete}
 				/>
 			</Paper>
 

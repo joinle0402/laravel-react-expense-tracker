@@ -15,6 +15,6 @@ Route::prefix('auth')->group(function () {
     });
 });
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('categories/summary', [CategoryController::class, 'summary']);
+    Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDelete']);
     Route::apiResource('categories', CategoryController::class);
 });

@@ -2,6 +2,12 @@ export interface MessageResponse {
 	message: string;
 }
 
+export interface BulkDeleteResponse {
+	message: string;
+	deleted_count: number;
+	deleted_ids: number[];
+}
+
 export type ApiErrorResponse = {
 	message?: string;
 	errors?: Record<string, string[]>;

@@ -6,6 +6,7 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import DeleteIcon from '@mui/icons-material/Delete';
 import TablePagination from '@mui/material/TablePagination';
 import LoaddingRow from '@/common/components/table/LoaddingRow.tsx';
 import EmptyRow from '@/common/components/table/EmptyRow.tsx';
@@ -14,6 +15,8 @@ import CategoryTableRow from '@/features/category/components/CategoryTableRow.ts
 import type { ChangeEvent, MouseEvent } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { Checkbox } from '@mui/material';
+import Button from '@mui/material/Button';
 
 const tableHeadCellStyle = {
 	bgcolor: '#F8FAFC',
@@ -30,10 +33,14 @@ interface CategoryTableProps {
 	isLoading: boolean;
 	categories: Category[];
 	search: string;
+	selectedIds: number[];
 	onPageChange: (_event: MouseEvent<HTMLButtonElement> | null, page: number) => void;
 	onRowsPerPageChange: (event: ChangeEvent<HTMLInputElement>) => void;
 	onDelete: (category: Category) => void;
 	onEdit: (category: Category) => void;
+	onSelectOne: (id: number) => void;
+	onSelectAll: (checked: boolean, ids: number[]) => void;
+	onBulkDelete: () => void;
 }
 
 export default function CategoryTable({
@@ -41,22 +48,63 @@ export default function CategoryTable({
 	totalItems,
 	page,
 	limit,
+	selectedIds,
 	onPageChange,
 	onRowsPerPageChange,
 	isLoading,
 	search,
 	onDelete,
 	onEdit,
+	onSelectOne,
+	onSelectAll,
+	onBulkDelete,
 }: CategoryTableProps) {
 	const from = totalItems === 0 ? 0 : page * limit + 1;
 	const to = Math.min((page + 1) * limit, totalItems);
+
+	const itemIds = categories.map(item => Number(item.id));
+	const selectedCount = itemIds.filter(id => selectedIds.includes(id)).length;
+	const isSelectedAll = categories.length > 0 && selectedCount === categories.length;
+	const isIndeterminate = selectedCount > 0 && selectedCount < categories.length;
+
 	return (
 		<Grid container>
 			<Grid size={12}>
+				<Box
+					sx={{
+						mb: 1,
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+					}}
+				>
+					<Typography variant="body2" color="text.secondary">
+						Đã chọn {selectedIds.length} danh mục
+					</Typography>
+
+					<Button
+						variant="contained"
+						color="error"
+						size="small"
+						startIcon={<DeleteIcon />}
+						disabled={selectedIds.length === 0}
+						onClick={onBulkDelete}
+					>
+						Xóa đã chọn
+					</Button>
+				</Box>
 				<TableContainer component={Paper} variant="elevation" sx={{ maxHeight: 480 }}>
 					<Table stickyHeader size="small">
 						<TableHead>
 							<TableRow>
+								<TableCell sx={{ ...tableHeadCellStyle, width: 48 }}>
+									<Checkbox
+										size="small"
+										checked={isSelectedAll}
+										indeterminate={isIndeterminate}
+										onChange={event => onSelectAll(event.target.checked, itemIds)}
+									/>
+								</TableCell>
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '10px' }}>#</TableCell>
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '35%' }}>Tên danh mục</TableCell>
 								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '160px' }}>Loại </TableCell>
@@ -72,7 +120,15 @@ export default function CategoryTable({
 								<EmptyRow colSpan={6} search={search} />
 							) : (
 								categories?.map((category: Category, index: number) => (
-									<CategoryTableRow key={category.id} index={index} category={category} onDelete={onDelete} onEdit={onEdit} />
+									<CategoryTableRow
+										key={category.id}
+										index={index}
+										category={category}
+										onDelete={onDelete}
+										onEdit={onEdit}
+										checked={selectedIds.includes(Number(category.id))}
+										onSelect={() => onSelectOne(Number(category.id))}
+									/>
 								))
 							)}
 						</TableBody>

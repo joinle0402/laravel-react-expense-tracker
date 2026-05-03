@@ -11,17 +11,23 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import Tooltip from '@mui/material/Tooltip';
 import type { Category } from '@/features/category/types/category.type.ts';
+import Checkbox from '@mui/material/Checkbox';
 
 interface CategoryTableRowProps {
 	index: number;
+	checked: boolean;
 	category: Category;
+	onSelect: () => void;
 	onDelete: (category: Category) => void;
 	onEdit: (category: Category) => void;
 }
 
-export default function CategoryTableRow({ index, category, onDelete, onEdit }: CategoryTableRowProps) {
+export default function CategoryTableRow({ index, category, checked, onSelect, onDelete, onEdit }: CategoryTableRowProps) {
 	return (
-		<TableRow hover sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' }, '&:last-child td': { borderBottom: 0 } }}>
+		<TableRow hover sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' }, '&:last-child td': { borderBottom: 0 } }} selected={checked}>
+			<TableCell>
+				<Checkbox size="small" checked={checked} onChange={onSelect} />
+			</TableCell>
 			<TableCell>{index + 1}</TableCell>
 			<TableCell>
 				<Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
