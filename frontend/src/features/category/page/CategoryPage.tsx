@@ -29,16 +29,21 @@ export default function CategoryPage() {
 	const { deleteConfirm } = useConfirmDialog();
 	const counts = response?.meta?.counts;
 
-	const handlePageChange = (_event: MouseEvent<HTMLButtonElement> | null, page: number) => setPage(page);
+	const handlePageChange = (_event: MouseEvent<HTMLButtonElement> | null, page: number) => {
+		setPage(page);
+		setSelectedIds([]);
+	};
 
 	const handleRowsPerPageChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setLimit(parseInt(event.target.value, 10));
 		setPage(0);
+		setSelectedIds([]);
 	};
 
 	const handleTabChange = (_event: SyntheticEvent, value: CategoryTab) => {
 		setTab(value);
 		setPage(0);
+		setSelectedIds([]);
 	};
 
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

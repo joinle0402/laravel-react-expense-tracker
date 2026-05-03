@@ -78,20 +78,24 @@ export default function CategoryTable({
 						alignItems: 'center',
 					}}
 				>
-					<Typography variant="body2" color="text.secondary">
-						Đã chọn {selectedIds.length} danh mục
-					</Typography>
+					{selectedIds.length > 0 && (
+						<Typography variant="body2" color="text.secondary">
+							Đã chọn {selectedIds.length} danh mục
+						</Typography>
+					)}
 
-					<Button
-						variant="contained"
-						color="error"
-						size="small"
-						startIcon={<DeleteIcon />}
-						disabled={selectedIds.length === 0}
-						onClick={onBulkDelete}
-					>
-						Xóa đã chọn
-					</Button>
+					{selectedIds.length > 0 && (
+						<Button
+							variant="contained"
+							color="error"
+							size="small"
+							startIcon={<DeleteIcon />}
+							disabled={selectedIds.length === 0}
+							onClick={onBulkDelete}
+						>
+							Xóa đã chọn
+						</Button>
+					)}
 				</Box>
 				<TableContainer component={Paper} variant="elevation" sx={{ maxHeight: 480 }}>
 					<Table stickyHeader size="small">
