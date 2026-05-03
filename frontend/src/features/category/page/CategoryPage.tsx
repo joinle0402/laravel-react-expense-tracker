@@ -10,12 +10,16 @@ import useConfirmDialog from '@/common/hooks/useConfirmDialog.ts';
 import CategoryToolbar from '@/features/category/components/CategoryToolbar.tsx';
 import CategoryTable from '@/features/category/components/CategoryTable.tsx';
 import useDeleteCategory from '@/features/category/hooks/useDeleteCategory.ts';
+import CategoryDialog from '@/features/category/components/CategoryDialog.tsx';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
 	const [search, setSearch] = useState<string>('');
 	const [page, setPage] = useState<number>(0);
 	const [limit, setLimit] = useState<number>(10);
+	const [openDialog, setOpenDialog] = useState<boolean>(false);
+	const [editCategory, setEditCategory] = useState<Category | null>(null);
+
 	const debouncedSearch = useDebounce(search.trim());
 	const { data: response, isLoading, isFetching } = useCategories({ tab, search: debouncedSearch.trim(), page: page + 1, limit });
 	const { mutateAsync: deleteCategory } = useDeleteCategory();
@@ -40,17 +44,17 @@ export default function CategoryPage() {
 	};
 
 	const handleDeleteClick = async (category: Category) => {
-		await deleteConfirm({
-			title: `Xóa danh mục "${category.name}"?`,
-			warning: 'Danh mục này sẽ không còn xuất hiện khi tạo giao dịch mới. Các giao dịch cũ dùng danh mục này vẫn được giữ nguyên.',
-			message: 'Hành động này chỉ đánh dấu danh mục là đã xóa, không xóa giao dịch cũ.',
-			maxWidth: 'sm',
-			onConfirm: () => deleteCategory(category.id),
-		});
+		await deleteConfirm({ title: `Xóa danh mục "${category.name}"?`, onConfirm: () => deleteCategory(category.id) });
+	};
+
+	const handleCreateClick = () => {
+		setOpenDialog(true);
+		setEditCategory(null);
 	};
 
 	const handleEditClick = async (category: Category) => {
-		console.log('handleEditClick', category);
+		setOpenDialog(true);
+		setEditCategory(category);
 	};
 
 	return (
@@ -75,6 +79,7 @@ export default function CategoryPage() {
 					onSearchChange={handleSearchChange}
 					counts={counts}
 					isFetching={isFetching}
+					onCreate={handleCreateClick}
 				/>
 
 				<CategoryTable
@@ -90,6 +95,15 @@ export default function CategoryPage() {
 					onEdit={handleEditClick}
 				/>
 			</Paper>
+
+			<CategoryDialog
+				open={openDialog}
+				mode={editCategory ? 'update' : 'create'}
+				initialValues={editCategory}
+				lockType={!!editCategory}
+				onClose={() => setOpenDialog(false)}
+				onConfirm={() => setPage(0)}
+			/>
 		</Box>
 	);
 }

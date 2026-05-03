@@ -26,4 +26,11 @@ class StoreCategoryRequest extends FormRequest
             'type' => 'required|string|in:income,expense',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'Tên danh mục'
+        ];
+    }
 }

@@ -31,3 +31,14 @@ export type CategoryParams = {
 	page: number;
 	limit: number;
 };
+
+export type CategoryFormValues = {
+	id?: string;
+	name: string;
+	type: CategoryType;
+};
+
+export type CategorySubmitResponse = {
+	message: string;
+	data: Category;
+};

@@ -13,7 +13,7 @@ class CategoryController extends Controller
     {
         return response()->json([
             ...Category::where('user_id', auth()->id())
-                ->when($request->filled('tab'))
+                ->when(in_array($request->tab, ['income', 'expense']), fn ($query) => $query->where('type', $request->tab))
                 ->when($request->filled('search'), function ($query) use ($request) {
                     $query->whereRaw('name COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%".trim($request->search)."%"]);
                 })

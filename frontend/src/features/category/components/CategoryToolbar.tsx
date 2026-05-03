@@ -20,9 +20,10 @@ interface CategoryToolbarProps {
 	search: string;
 	onSearchChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void;
 	isFetching: boolean;
+	onCreate: () => void;
 }
 
-export default function CategoryToolbar({ tab, onTabChange, counts, search, onSearchChange, isFetching }: CategoryToolbarProps) {
+export default function CategoryToolbar({ tab, onTabChange, counts, search, onSearchChange, isFetching, onCreate }: CategoryToolbarProps) {
 	const tabs = [
 		{ value: 'all', label: 'Tất cả' },
 		{ value: 'expense', label: 'Chi tiêu' },
@@ -125,7 +126,7 @@ export default function CategoryToolbar({ tab, onTabChange, counts, search, onSe
 							},
 						}}
 					/>
-					<Button variant="contained" startIcon={<AddIcon />} sx={{ minHeight: 38 }}>
+					<Button variant="contained" startIcon={<AddIcon />} onClick={onCreate} sx={{ minHeight: 38 }}>
 						Tạo danh mục
 					</Button>
 				</Stack>
