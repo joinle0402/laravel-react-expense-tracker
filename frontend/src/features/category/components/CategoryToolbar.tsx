@@ -10,6 +10,7 @@ import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CircularProgress from '@mui/material/CircularProgress';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 import type { CategoryTab, CategoryTabCounts } from '@/features/category/types/category.type';
@@ -21,9 +22,11 @@ interface CategoryToolbarProps {
 	search: string;
 	onSearchChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void;
 	isFetching: boolean;
-	isExporting: boolean;
+	isExporting?: boolean;
+	isImporting?: boolean;
 	onCreate: () => void;
 	onExport: () => Promise<void>;
+	onImport: (file: File) => Promise<void>;
 }
 
 export default function CategoryToolbar({
@@ -35,7 +38,9 @@ export default function CategoryToolbar({
 	isFetching,
 	onCreate,
 	onExport,
+	onImport,
 	isExporting = false,
+	isImporting = false,
 }: CategoryToolbarProps) {
 	const tabs = [
 		{ value: 'all', label: 'Tất cả' },
@@ -141,6 +146,33 @@ export default function CategoryToolbar({
 					/>
 					<Button variant="outlined" startIcon={<FileDownloadOutlinedIcon />} onClick={onExport} disabled={isExporting || isFetching}>
 						{isExporting ? 'Đang xuất...' : 'Xuất excel'}
+					</Button>
+					<Button
+						component="label"
+						htmlFor="import-excel"
+						role={undefined}
+						variant="contained"
+						tabIndex={-1}
+						startIcon={<UploadFileIcon />}
+						loading={isImporting}
+						loadingIndicator="Đang import excel..."
+					>
+						Upload files
+						<input
+							id="import-excel"
+							type="file"
+							accept=".xlsx,.xls,.csv"
+							hidden
+							onChange={async event => {
+								try {
+									const file = event.target.files?.[0];
+									if (!file) return;
+									await onImport(file);
+								} finally {
+									event.target.value = '';
+								}
+							}}
+						/>
 					</Button>
 					<Button variant="contained" startIcon={<AddIcon />} onClick={onCreate} sx={{ minHeight: 38 }}>
 						Tạo danh mục

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\CategoriesExport;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Imports\CategoriesImport;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -51,6 +52,19 @@ class CategoryController extends Controller
                 ->get();
         }
         return Excel::download(new CategoriesExport($categories), 'categories.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:5120'], [
+            'file.required' => 'Vui lòng chọn file Excel.',
+            'file.mimes' => 'File phải có định dạng xlsx, xls hoặc csv.',
+            'file.max' => 'File không được vượt quá 5MB.',
+        ]);
+        Excel::import(new CategoriesImport(), $request->file('file'));
+        return response()->json([
+            'message' => 'Import danh mục thành công.',
+        ]);
     }
 
     public function store(StoreCategoryRequest $request)

@@ -13,6 +13,7 @@ import useDeleteCategory from '@/features/category/hooks/useDeleteCategory.ts';
 import CategoryDialog from '@/features/category/components/CategoryDialog.tsx';
 import UseBulkDeleteCategories from '@/features/category/hooks/useBulkDeleteCategories.ts';
 import useExportCategories from '@/features/category/hooks/useExportCategories.ts';
+import useImportCategories from '@/features/category/hooks/useImportCategories.ts';
 
 export default function CategoryPage() {
 	const [tab, setTab] = useState<CategoryTab>('all');
@@ -28,6 +29,7 @@ export default function CategoryPage() {
 	const { mutateAsync: deleteCategory } = useDeleteCategory();
 	const { mutateAsync: bulkDeleteCategories } = UseBulkDeleteCategories();
 	const { mutateAsync: exportExcel, isPending: isExporting } = useExportCategories();
+	const { mutateAsync: importExcel, isPending: isImporting } = useImportCategories();
 	const { deleteConfirm } = useConfirmDialog();
 	const counts = response?.meta?.counts;
 
@@ -93,6 +95,12 @@ export default function CategoryPage() {
 		});
 	};
 
+	const handleImportExcel = async (file: File) => {
+		await importExcel(file);
+		setPage(0);
+		setSelectedIds([]);
+	};
+
 	return (
 		<Box sx={{ p: 1 }}>
 			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
@@ -118,6 +126,8 @@ export default function CategoryPage() {
 					onCreate={handleCreateClick}
 					onExport={handleExportExcel}
 					isExporting={isExporting}
+					onImport={handleImportExcel}
+					isImporting={isImporting}
 				/>
 
 				<CategoryTable
