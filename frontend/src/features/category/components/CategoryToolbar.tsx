@@ -49,14 +49,17 @@ export default function CategoryToolbar({
 	] as const;
 
 	return (
-		<Grid container spacing={2} sx={{ alignItems: 'center', mb: 1 }}>
-			<Grid size={{ xs: 12, md: 4 }}>
+		<Grid container spacing={1} sx={{ alignItems: 'center', mb: 1 }}>
+			<Grid size={{ xs: 12, md: 5 }}>
 				<Tabs
 					value={tab}
 					onChange={onTabChange}
+					variant="scrollable"
+					scrollButtons="auto"
 					sx={{
 						minHeight: 44,
 						height: 44,
+						maxWidth: '100%',
 
 						'& .MuiTabs-indicator': {
 							height: 3,
@@ -69,6 +72,8 @@ export default function CategoryToolbar({
 							textTransform: 'none',
 							fontWeight: 700,
 							color: 'text.secondary',
+							minWidth: 'auto',
+							px: { xs: 1.5, md: 2 },
 						},
 
 						'& .Mui-selected': {
@@ -112,8 +117,12 @@ export default function CategoryToolbar({
 					))}
 				</Tabs>
 			</Grid>
-			<Grid size={{ xs: 12, md: 8 }}>
-				<Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', minHeight: 38 }}>
+			<Grid size={{ xs: 12, md: 7 }}>
+				<Stack
+					direction={{ sm: 'row' }}
+					spacing={1}
+					sx={{ alignItems: { xs: 'stretch', sm: 'center' }, justifyContent: 'flex-end', minHeight: 38, gap: 1 }}
+				>
 					<TextField
 						fullWidth
 						size="small"
@@ -136,54 +145,60 @@ export default function CategoryToolbar({
 						}}
 						sx={{
 							flex: 1,
-							maxWidth: 300,
-							minWidth: 260,
-
+							maxWidth: { xs: '100%', sm: 250 },
+							minWidth: { xs: 0, sm: 200 },
 							'& .MuiInputBase-root': {
 								height: 38,
 							},
 						}}
 					/>
-					<Button
-						variant="outlined"
-						startIcon={<FileDownloadOutlinedIcon />}
-						onClick={onExport}
-						disabled={isExporting || isFetching}
-						sx={{ height: 38, whiteSpace: 'nowrap', minWidth: 96 }}
-					>
-						{isExporting ? 'Đang xuất...' : 'Xuất'}
-					</Button>
-					<Button
-						component="label"
-						htmlFor="import-excel"
-						role={undefined}
-						variant="contained"
-						tabIndex={-1}
-						startIcon={<UploadFileIcon />}
-						loading={isImporting}
-						loadingIndicator="Đang import..."
-						sx={{ height: 38, whiteSpace: 'nowrap', minWidth: 110 }}
-					>
-						import
-						<input
-							id="import-excel"
-							type="file"
-							accept=".xlsx,.xls,.csv"
-							hidden
-							onChange={async event => {
-								try {
-									const file = event.target.files?.[0];
-									if (!file) return;
-									await onImport(file);
-								} finally {
-									event.target.value = '';
-								}
-							}}
-						/>
-					</Button>
-					<Button variant="contained" startIcon={<AddIcon />} onClick={onCreate} sx={{ minHeight: 38, whiteSpace: 'nowrap', minWidth: 80 }}>
-						Tạo
-					</Button>
+					<Stack direction="row" spacing={1}>
+						<Button
+							variant="outlined"
+							startIcon={<FileDownloadOutlinedIcon />}
+							onClick={onExport}
+							disabled={isExporting || isFetching}
+							sx={{ height: 38, whiteSpace: 'nowrap', minWidth: 96 }}
+						>
+							{isExporting ? 'Đang xuất...' : 'Xuất'}
+						</Button>
+						<Button
+							component="label"
+							htmlFor="import-excel"
+							role={undefined}
+							variant="contained"
+							tabIndex={-1}
+							startIcon={<UploadFileIcon />}
+							loading={isImporting}
+							loadingIndicator="Đang import..."
+							sx={{ height: 38, whiteSpace: 'nowrap', minWidth: 110 }}
+						>
+							import
+							<input
+								id="import-excel"
+								type="file"
+								accept=".xlsx,.xls,.csv"
+								hidden
+								onChange={async event => {
+									try {
+										const file = event.target.files?.[0];
+										if (!file) return;
+										await onImport(file);
+									} finally {
+										event.target.value = '';
+									}
+								}}
+							/>
+						</Button>
+						<Button
+							variant="contained"
+							startIcon={<AddIcon />}
+							onClick={onCreate}
+							sx={{ minHeight: 38, whiteSpace: 'nowrap', minWidth: 80 }}
+						>
+							Tạo
+						</Button>
+					</Stack>
 				</Stack>
 			</Grid>
 		</Grid>

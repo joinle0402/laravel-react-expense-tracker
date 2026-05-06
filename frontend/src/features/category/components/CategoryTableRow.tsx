@@ -41,7 +41,9 @@ export default function CategoryTableRow({ index, category, checked, onSelect, o
 					>
 						{category.type === 'income' ? <TrendingUpIcon fontSize="small" /> : <ReceiptLongIcon fontSize="small" />}
 					</Avatar>
-					<Typography sx={{ fontWeight: 600 }}>{category.name}</Typography>
+					<Typography sx={{ fontWeight: 600 }} noWrap>
+						{category.name}
+					</Typography>
 				</Stack>
 			</TableCell>
 			<TableCell>

@@ -22,6 +22,7 @@ const tableHeadCellStyle = {
 	fontSize: 12,
 	color: 'text.secondary',
 	textTransform: 'uppercase',
+	whiteSpace: 'nowrap',
 };
 
 interface CategoryTableProps {
@@ -149,12 +150,21 @@ export default function CategoryTable({
 					bgcolor: 'background.paper',
 					width: '100%',
 					display: 'flex',
+					flexDirection: { xs: 'column', sm: 'row' },
 					justifyContent: 'space-between',
-					alignItems: 'center',
-					px: 2,
+					alignItems: { xs: 'stretch', sm: 'center' },
+					gap: { xs: 0.5, sm: 1 },
+					px: { xs: 1, sm: 2 },
+					py: { xs: 1, sm: 0 },
 				}}
 			>
-				<Typography variant="body2">
+				<Typography
+					variant="body2"
+					sx={{
+						textAlign: { xs: 'center', sm: 'left' },
+						whiteSpace: 'nowrap',
+					}}
+				>
 					Hiển thị {from}–{to} trong {totalItems} danh mục
 				</Typography>
 				<TablePagination
@@ -172,7 +182,7 @@ export default function CategoryTable({
 						flexShrink: 0,
 						bgcolor: 'background.paper',
 						'.MuiTablePagination-toolbar': {
-							minHeight: 52,
+							minHeight: 48,
 							px: 0,
 						},
 					}}
