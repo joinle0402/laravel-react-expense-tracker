@@ -102,7 +102,7 @@ export default function CategoryPage() {
 	};
 
 	return (
-		<Box sx={{ p: 1 }}>
+		<Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
 			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
 				<Box>
 					<Typography variant="h5" sx={{ fontWeight: 700 }}>
@@ -115,7 +115,15 @@ export default function CategoryPage() {
 				</Box>
 			</Stack>
 
-			<Paper sx={{ p: 2, borderRadius: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
+			<Paper
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					maxHeight: 'calc(100vh - 180px)',
+					overflow: 'hidden',
+					borderRadius: 2,
+				}}
+			>
 				<CategoryToolbar
 					tab={tab}
 					onTabChange={handleTabChange}

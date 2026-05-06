@@ -11,7 +11,7 @@ export default function AdminLayout() {
 	const handleToggleSidebarOpen = () => setSidebarOpen((isSidebarOpen: boolean) => !isSidebarOpen);
 
 	return (
-		<Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'grey.100' }}>
+		<Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden', bgcolor: 'grey.100' }}>
 			<Sidebar open={sidebarOpen} />
 			<Header sidebarOpen={sidebarOpen} onToggleSidebar={handleToggleSidebarOpen} sidebarWidth={sidebarWidth} />
 			<Box
@@ -19,7 +19,7 @@ export default function AdminLayout() {
 				sx={{
 					flexGrow: 1,
 					width: `calc(100% - ${sidebarWidth}px)`,
-					minHeight: '100vh',
+					height: '100vh',
 					pt: `${HEADER_HEIGHT}px`,
 					transition: theme =>
 						theme.transitions.create(['width', 'margin-left'], {
@@ -28,7 +28,7 @@ export default function AdminLayout() {
 						}),
 				}}
 			>
-				<Box sx={{ p: 1 }}>
+				<Box sx={{ height: `calc(100vh - ${HEADER_HEIGHT}px)`, overflow: 'auto', p: 2 }}>
 					<Outlet />
 				</Box>
 			</Box>

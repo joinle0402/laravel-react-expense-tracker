@@ -50,7 +50,7 @@ export default function CategoryToolbar({
 
 	return (
 		<Grid container spacing={2} sx={{ alignItems: 'center', mb: 1 }}>
-			<Grid size={{ xs: 12, md: 6 }}>
+			<Grid size={{ xs: 12, md: 4 }}>
 				<Tabs
 					value={tab}
 					onChange={onTabChange}
@@ -112,7 +112,7 @@ export default function CategoryToolbar({
 					))}
 				</Tabs>
 			</Grid>
-			<Grid size={{ xs: 12, md: 6 }}>
+			<Grid size={{ xs: 12, md: 8 }}>
 				<Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', minHeight: 38 }}>
 					<TextField
 						fullWidth
@@ -144,8 +144,14 @@ export default function CategoryToolbar({
 							},
 						}}
 					/>
-					<Button variant="outlined" startIcon={<FileDownloadOutlinedIcon />} onClick={onExport} disabled={isExporting || isFetching}>
-						{isExporting ? 'Đang xuất...' : 'Xuất excel'}
+					<Button
+						variant="outlined"
+						startIcon={<FileDownloadOutlinedIcon />}
+						onClick={onExport}
+						disabled={isExporting || isFetching}
+						sx={{ height: 38, whiteSpace: 'nowrap', minWidth: 96 }}
+					>
+						{isExporting ? 'Đang xuất...' : 'Xuất'}
 					</Button>
 					<Button
 						component="label"
@@ -155,9 +161,10 @@ export default function CategoryToolbar({
 						tabIndex={-1}
 						startIcon={<UploadFileIcon />}
 						loading={isImporting}
-						loadingIndicator="Đang import excel..."
+						loadingIndicator="Đang import..."
+						sx={{ height: 38, whiteSpace: 'nowrap', minWidth: 110 }}
 					>
-						Upload files
+						import
 						<input
 							id="import-excel"
 							type="file"
@@ -174,8 +181,8 @@ export default function CategoryToolbar({
 							}}
 						/>
 					</Button>
-					<Button variant="contained" startIcon={<AddIcon />} onClick={onCreate} sx={{ minHeight: 38 }}>
-						Tạo danh mục
+					<Button variant="contained" startIcon={<AddIcon />} onClick={onCreate} sx={{ minHeight: 38, whiteSpace: 'nowrap', minWidth: 80 }}>
+						Tạo
 					</Button>
 				</Stack>
 			</Grid>

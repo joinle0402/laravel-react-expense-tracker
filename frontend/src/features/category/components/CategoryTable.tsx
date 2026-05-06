@@ -1,6 +1,4 @@
-import Grid from '@mui/material/Grid';
 import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
@@ -68,111 +66,118 @@ export default function CategoryTable({
 	const isIndeterminate = selectedCount > 0 && selectedCount < categories.length;
 
 	return (
-		<Grid container>
-			<Grid size={12}>
+		<Box
+			sx={{
+				flex: 1,
+				minHeight: 0,
+				display: 'flex',
+				flexDirection: 'column',
+				overflow: 'hidden',
+			}}
+		>
+			{selectedIds.length > 0 && (
 				<Box
 					sx={{
-						mb: 1,
+						flexShrink: 0,
+						px: 2,
+						py: 1,
 						display: 'flex',
 						justifyContent: 'space-between',
 						alignItems: 'center',
-					}}
-				>
-					{selectedIds.length > 0 && (
-						<Typography variant="body2" color="text.secondary">
-							Đã chọn {selectedIds.length} danh mục
-						</Typography>
-					)}
-
-					{selectedIds.length > 0 && (
-						<Button
-							variant="contained"
-							color="error"
-							size="small"
-							startIcon={<DeleteIcon />}
-							disabled={selectedIds.length === 0}
-							onClick={onBulkDelete}
-						>
-							Xóa đã chọn
-						</Button>
-					)}
-				</Box>
-				<TableContainer component={Paper} variant="elevation" sx={{ maxHeight: 480 }}>
-					<Table stickyHeader size="small">
-						<TableHead>
-							<TableRow>
-								<TableCell sx={{ ...tableHeadCellStyle, width: 48 }}>
-									<Checkbox
-										size="small"
-										checked={isSelectedAll}
-										indeterminate={isIndeterminate}
-										onChange={event => onSelectAll(event.target.checked, itemIds)}
-									/>
-								</TableCell>
-								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '10px' }}>#</TableCell>
-								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '35%' }}>Tên danh mục</TableCell>
-								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '160px' }}>Loại </TableCell>
-								<TableCell sx={{ ...tableHeadCellStyle, minWidth: '100px' }} align="right">
-									Hành động
-								</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{isLoading ? (
-								<LoaddingRow colSpan={6} />
-							) : categories?.length == 0 ? (
-								<EmptyRow colSpan={6} search={search} />
-							) : (
-								categories?.map((category: Category, index: number) => (
-									<CategoryTableRow
-										key={category.id}
-										index={index}
-										category={category}
-										onDelete={onDelete}
-										onEdit={onEdit}
-										checked={selectedIds.includes(Number(category.id))}
-										onSelect={() => onSelectOne(Number(category.id))}
-									/>
-								))
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
-
-				<Box
-					sx={{
 						borderTop: '1px solid',
 						borderColor: 'divider',
 						bgcolor: 'background.paper',
-						width: '100%',
-						display: 'flex',
-						justifyContent: 'space-between',
-						alignItems: 'center',
 					}}
 				>
-					<Typography variant="body2">
-						Hiển thị {from}–{to} trong {totalItems} danh mục
+					<Typography variant="body2" color="text.secondary">
+						Đã chọn {selectedIds.length} danh mục
 					</Typography>
-					<TablePagination
-						component="div"
-						size="small"
-						count={totalItems}
-						page={page}
-						onPageChange={onPageChange}
-						rowsPerPage={limit}
-						onRowsPerPageChange={onRowsPerPageChange}
-						rowsPerPageOptions={[10, 20, 50]}
-						labelRowsPerPage="Số dòng mỗi trang"
-						labelDisplayedRows={() => ''}
-						sx={{
-							'.MuiTablePagination-toolbar': {
-								minHeight: 40,
-								px: 0,
-							},
-						}}
-					/>
+
+					<Button variant="contained" color="error" size="small" startIcon={<DeleteIcon />} onClick={onBulkDelete}>
+						Xóa đã chọn
+					</Button>
 				</Box>
-			</Grid>
-		</Grid>
+			)}
+
+			<TableContainer sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+				<Table stickyHeader size="small">
+					<TableHead>
+						<TableRow>
+							<TableCell sx={{ ...tableHeadCellStyle, width: 48 }}>
+								<Checkbox
+									size="small"
+									checked={isSelectedAll}
+									indeterminate={isIndeterminate}
+									onChange={event => onSelectAll(event.target.checked, itemIds)}
+								/>
+							</TableCell>
+							<TableCell sx={{ ...tableHeadCellStyle, minWidth: '10px' }}>#</TableCell>
+							<TableCell sx={{ ...tableHeadCellStyle, minWidth: '35%' }}>Tên danh mục</TableCell>
+							<TableCell sx={{ ...tableHeadCellStyle, minWidth: '160px' }}>Loại </TableCell>
+							<TableCell sx={{ ...tableHeadCellStyle, minWidth: '100px' }} align="right">
+								Hành động
+							</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{isLoading ? (
+							<LoaddingRow colSpan={6} />
+						) : categories?.length == 0 ? (
+							<EmptyRow colSpan={6} search={search} />
+						) : (
+							categories?.map((category: Category, index: number) => (
+								<CategoryTableRow
+									key={category.id}
+									index={index}
+									category={category}
+									onDelete={onDelete}
+									onEdit={onEdit}
+									checked={selectedIds.includes(Number(category.id))}
+									onSelect={() => onSelectOne(Number(category.id))}
+								/>
+							))
+						)}
+					</TableBody>
+				</Table>
+			</TableContainer>
+
+			<Box
+				sx={{
+					flexShrink: 0,
+					borderTop: '1px solid',
+					borderColor: 'divider',
+					bgcolor: 'background.paper',
+					width: '100%',
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+					px: 2,
+				}}
+			>
+				<Typography variant="body2">
+					Hiển thị {from}–{to} trong {totalItems} danh mục
+				</Typography>
+				<TablePagination
+					component="div"
+					size="small"
+					count={totalItems}
+					page={page}
+					onPageChange={onPageChange}
+					rowsPerPage={limit}
+					onRowsPerPageChange={onRowsPerPageChange}
+					rowsPerPageOptions={[10, 20, 50]}
+					labelRowsPerPage="Số dòng mỗi trang"
+					labelDisplayedRows={() => ''}
+					sx={{
+						flexShrink: 0,
+						bgcolor: 'background.paper',
+						'.MuiTablePagination-toolbar': {
+							minHeight: 52,
+							px: 0,
+						},
+					}}
+				/>
+			</Box>
+		</Box>
 	);
 }
