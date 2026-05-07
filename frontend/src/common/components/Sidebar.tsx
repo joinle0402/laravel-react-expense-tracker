@@ -25,27 +25,27 @@ type SidebarItem = {
 
 const sidebarItems: SidebarItem[] = [
 	{
-		label: 'Dashboard',
+		label: 'Tổng quan',
 		path: '/admin/dashboard',
 		icon: <Dashboard />,
 	},
 	{
-		label: 'Transactions',
+		label: 'Giao dịch',
 		path: '/admin/transactions',
 		icon: <ReceiptLong />,
 	},
 	{
-		label: 'Categories',
+		label: 'Danh mục',
 		path: '/admin/categories',
 		icon: <Category />,
 	},
 	{
-		label: 'Budgets',
+		label: 'Ngân sách',
 		path: '/admin/budgets',
 		icon: <AccountBalanceWallet />,
 	},
 	{
-		label: 'Settings',
+		label: 'Cài đặt',
 		path: '/admin/settings',
 		icon: <Settings />,
 	},
@@ -124,9 +124,9 @@ export default function Sidebar({ open }: SidebarProps) {
 
 						{open && (
 							<Box>
-								<Typography sx={{ fontWeight: 800, lineHeight: '1.2' }}>Expense Tracker</Typography>
+								<Typography sx={{ fontWeight: 800, lineHeight: '1.2' }}>Quản lý chi tiêu</Typography>
 								<Typography variant="caption" color="text.secondary">
-									Admin Panel
+									Trang quản trị
 								</Typography>
 							</Box>
 						)}

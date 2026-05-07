@@ -1,3 +1,5 @@
+import { Navigate } from 'react-router-dom';
+
 export default function DashboardPage() {
-	return <div>Hello DashboardPage</div>;
+	return <Navigate to="/admin/transactions" replace />;
 }
