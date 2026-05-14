@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -35,5 +36,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => 'Không tìm thấy thông tin này.'], 404);
             }
             return response()->json(['message' => 'Không tìm thấy tài nguyên.'], 404);
+        });
+
+        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Vui lòng đăng nhập để tiếp tục.',
+                ], 401);
+            }
+            return null;
         });
     })->create();

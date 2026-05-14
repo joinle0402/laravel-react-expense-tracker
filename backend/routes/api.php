@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
@@ -19,4 +20,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('categories/import', [CategoryController::class, 'import']);
     Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDelete']);
     Route::apiResource('categories', CategoryController::class);
+
+    Route::delete('transactions/bulk-delete', [TransactionController::class, 'bulkDelete']);
+    Route::apiResource('transactions', TransactionController::class)->except(['destroy']);
 });
