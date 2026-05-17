@@ -19,4 +19,12 @@ export interface Transaction {
 	};
 }
 
+export interface CreateTransactionPayload {
+	type: TransactionType;
+	category_id: number;
+	amount: number;
+	dated: string;
+	note?: string;
+}
+
 export type TransactionPaginated = ResourcePaginatedResponse<Transaction>;

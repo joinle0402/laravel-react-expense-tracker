@@ -18,7 +18,7 @@ class TransactionRequest extends FormRequest
         return [
             'category_id' => 'required|integer',
             'type' => 'required|in:expense,income',
-            'amount' => 'required|numeric|gt:0|max:999999.99',
+            'amount' => 'required|numeric|gt:0',
             'dated' => 'required|date',
             'note' => 'nullable|string|max:255',
         ];

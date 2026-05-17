@@ -15,6 +15,8 @@ import PriceField from '@/common/components/form/PriceField.tsx';
 import DateField from '@/common/components/form/DatePicker.tsx';
 import { getCurrentDate } from '@/common/utils/date.ts';
 import InputField from '@/common/components/form/InputField.tsx';
+import useCreateTransaction from '@/features/transactions/hooks/useCreateTransaction.tsx';
+import { handleApiError } from '@/common/utils/handle-api-error.ts';
 
 const Schema = z.object({
 	type: z.enum(['expense', 'income'], { message: 'Vui lòng chọn loại danh mục' }),
@@ -35,6 +37,7 @@ interface TransactionDialogProps {
 	open: boolean;
 	mode: 'create' | 'update';
 	initialValues?: FormValues;
+	onClose: () => void;
 }
 
 const TRANSACTION_TYPE_OPTIONS = [
@@ -42,25 +45,40 @@ const TRANSACTION_TYPE_OPTIONS = [
 	{ label: 'Thu nhập', value: 'income' },
 ];
 
-export default function TransactionDialog({ open = true, mode }: TransactionDialogProps) {
+export default function TransactionDialog({ open = true, mode, onClose }: TransactionDialogProps) {
 	const isEdit = mode === 'update';
-	const { control, setValue, handleSubmit } = useForm({
+	const {
+		control,
+		setValue,
+		handleSubmit,
+		formState: { isSubmitting },
+		setError,
+		reset,
+	} = useForm({
 		resolver: zodResolver(Schema),
 		defaultValues: { type: 'expense', category_id: null, amount: null, dated: getCurrentDate(), note: '' },
 	});
+	const { mutateAsync: create, isPending: isCreating } = useCreateTransaction();
 
 	const type = useWatch({ control, name: 'type' });
 	const { data: categories = [], isLoading } = useCategoryOptions(type);
 	const categoryOptions = categories.map(item => ({ value: item.id, label: item.name }));
+	const isSubmitted = isCreating || isSubmitting;
 
 	useEffect(() => setValue('category_id', null), [type, setValue]);
 
-	const onSubmit = (values: FormValues) => {
-		console.log(values);
+	const onSubmit = async (values: FormValues) => {
+		try {
+			await create(values);
+			reset();
+			onClose();
+		} catch (error) {
+			handleApiError({ error, setError });
+		}
 	};
 
 	return (
-		<Dialog open={open} maxWidth="sm" fullWidth>
+		<Dialog open={open} maxWidth="sm" onClose={onClose} fullWidth>
 			<form onSubmit={handleSubmit(onSubmit)} noValidate>
 				<DialogTitle align="center">{isEdit ? 'Cập nhật giao dịch' : 'Thêm giao dịch'}</DialogTitle>
 				<DialogContent>
@@ -75,15 +93,13 @@ export default function TransactionDialog({ open = true, mode }: TransactionDial
 							multiline
 							rows={3}
 							label="Ghi chú"
-							minRows={2}
-							maxRows={4}
 							placeholder="Ví dụ: Ăn trưa, mua đồ, nhận lương..."
 						/>
 					</Stack>
 				</DialogContent>
 				<DialogActions sx={{ px: 3 }}>
-					<Button>Huỷ</Button>
-					<Button type="submit" variant="contained">
+					<Button onClick={onClose}>Huỷ</Button>
+					<Button type="submit" variant="contained" loading={isSubmitted} loadingIndicator="Đang lưu...">
 						{isEdit ? 'Cập nhật' : 'Thêm mới'}
 					</Button>
 				</DialogActions>

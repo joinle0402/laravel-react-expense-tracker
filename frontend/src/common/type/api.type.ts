@@ -13,6 +13,11 @@ export type ApiErrorResponse = {
 	errors?: Record<string, string[]>;
 };
 
+export type MessageDataResponse<T> = {
+	message: string;
+	data: T;
+};
+
 export type PaginationLink = {
 	url: string | null;
 	label: string;
