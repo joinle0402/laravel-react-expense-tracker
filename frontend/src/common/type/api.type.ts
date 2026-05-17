@@ -36,3 +36,23 @@ export type PaginatedResponse<T> = {
 	to: number | null;
 	total: number;
 };
+
+export type ResourcePaginatedResponse<T> = {
+	data: T[];
+	links: {
+		first: string | null;
+		last: string | null;
+		prev: string | null;
+		next: string | null;
+	};
+	meta: {
+		current_page: number;
+		from: number | null;
+		last_page: number;
+		links: PaginationLink[];
+		path: string;
+		per_page: number;
+		to: number | null;
+		total: number;
+	};
+};

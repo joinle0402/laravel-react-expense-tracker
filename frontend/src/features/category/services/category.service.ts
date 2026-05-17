@@ -1,6 +1,8 @@
 import { http } from '@/common/libs/axios';
 import type {
 	CategoryFormValues,
+	CategoryOption,
+	CategoryOptionParams,
 	CategoryPaginatedResponse,
 	CategoryParams,
 	CategorySubmitResponse,
@@ -14,6 +16,9 @@ const rootPath = '/categories';
 export const categoryService = {
 	findAll(params: CategoryParams): Promise<CategoryPaginatedResponse> {
 		return http.get<CategoryPaginatedResponse>(rootPath, { params });
+	},
+	findOptions(params: CategoryOptionParams): Promise<CategoryOption[]> {
+		return http.get<CategoryOption[]>(joinPath(rootPath, 'options'), { params });
 	},
 	export(params: CategoryParams & { ids: number[] | undefined }): Promise<Blob> {
 		return http.get<Blob>(joinPath(rootPath, 'export'), { responseType: 'blob', params });

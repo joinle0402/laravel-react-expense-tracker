@@ -11,6 +11,12 @@ export type Category = {
 	updated_at: string;
 };
 
+export type CategoryOption = {
+	id: string;
+	name: string;
+	type: CategoryType;
+};
+
 export type CategoryTab = 'all' | 'expense' | 'income';
 
 export type CategoryTabCounts = {
@@ -30,6 +36,10 @@ export type CategoryParams = {
 	search: string;
 	page: number;
 	limit: number;
+};
+
+export type CategoryOptionParams = {
+	type: 'expense' | 'income';
 };
 
 export type CategoryFormValues = {

@@ -6,6 +6,7 @@ use Doctrine\SqlFormatter\NullHighlighter;
 use Doctrine\SqlFormatter\SqlFormatter;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -19,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        JsonResource::withoutWrapping();
         DB::listen(function (QueryExecuted $query) {
             if (app()->runningInConsole()) return;
             if (request() && request()->is('sanctum/*') || request()->routeIs('login', 'password.*')) return;

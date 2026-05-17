@@ -14,6 +14,7 @@ class TransactionResource extends JsonResource
             'category_id' => $this->category_id,
             'type' => $this->type,
             'note' => $this->note,
+            'amount' => $this->amount,
             'dated' => $this->dated?->format('Y-m-d'),
             'category' => $this->whenLoaded('category', function () {
                 return [
@@ -22,6 +23,8 @@ class TransactionResource extends JsonResource
                     'type' => $this->category->type,
                 ];
             }),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

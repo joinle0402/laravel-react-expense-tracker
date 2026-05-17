@@ -32,6 +32,15 @@ class CategoryController extends Controller
         ]);
     }
 
+    public function options(Request $request)
+    {
+        return Category::query()
+            ->where('user_id', auth()->id())
+            ->when(in_array($request->type, ['income', 'expense']), fn ($query) => $query->where('type', $request->type))
+            ->select('id', 'name', 'type')
+            ->get();
+    }
+
     /**
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
