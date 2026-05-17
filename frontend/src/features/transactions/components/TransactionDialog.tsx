@@ -19,9 +19,11 @@ import InputField from '@/common/components/form/InputField.tsx';
 const Schema = z.object({
 	type: z.enum(['expense', 'income'], { message: 'Vui lòng chọn loại danh mục' }),
 	category_id: z
-		.number()
+		.number({ message: 'Vui lòng chọn danh mục' })
 		.nullable()
-		.refine(value => value !== null, { message: 'Vui lòng chọn danh mục' }),
+		.refine((value): value is number => value !== null, {
+			message: 'Vui lòng chọn danh mục',
+		}),
 	amount: z.coerce.number({ message: 'Vui lòng nhập số tiền' }).positive('Số tiền phải lớn hơn 0'),
 	dated: z.string({ message: 'Vui lòng chọn ngày giao dịch' }).min(1, 'Vui lòng chọn ngày giao dịch'),
 	note: z.string(),
@@ -35,17 +37,17 @@ interface TransactionDialogProps {
 	initialValues?: FormValues;
 }
 
+const TRANSACTION_TYPE_OPTIONS = [
+	{ label: 'Chi tiêu', value: 'expense' },
+	{ label: 'Thu nhập', value: 'income' },
+];
+
 export default function TransactionDialog({ open = true, mode }: TransactionDialogProps) {
 	const isEdit = mode === 'update';
 	const { control, setValue, handleSubmit } = useForm({
 		resolver: zodResolver(Schema),
 		defaultValues: { type: 'expense', category_id: null, amount: null, dated: getCurrentDate(), note: '' },
 	});
-
-	const transactionTypeOptions = [
-		{ label: 'Chi tiêu', value: 'expense' },
-		{ label: 'Thu nhập', value: 'income' },
-	];
 
 	const type = useWatch({ control, name: 'type' });
 	const { data: categories = [], isLoading } = useCategoryOptions(type);
@@ -63,11 +65,20 @@ export default function TransactionDialog({ open = true, mode }: TransactionDial
 				<DialogTitle align="center">{isEdit ? 'Cập nhật giao dịch' : 'Thêm giao dịch'}</DialogTitle>
 				<DialogContent>
 					<Stack spacing={2} sx={{ mt: 1 }}>
-						<OptionToggleField control={control} name="type" options={transactionTypeOptions} />
+						<OptionToggleField control={control} name="type" options={TRANSACTION_TYPE_OPTIONS} />
 						<AutocompleteField control={control} name="category_id" label="Danh mục" loading={isLoading} options={categoryOptions} />
 						<PriceField control={control} name="amount" label="Số tiền" />
-						<DateField control={control} name="dated" label="Ngày giao dịch" maxDate={getCurrentDate()} />
-						<InputField control={control} name="note" multiline rows={3} label="Ghi chú" />
+						<DateField control={control} name="dated" label="Ngày giao dịch" />
+						<InputField
+							control={control}
+							name="note"
+							multiline
+							rows={3}
+							label="Ghi chú"
+							minRows={2}
+							maxRows={4}
+							placeholder="Ví dụ: Ăn trưa, mua đồ, nhận lương..."
+						/>
 					</Stack>
 				</DialogContent>
 				<DialogActions sx={{ px: 3 }}>

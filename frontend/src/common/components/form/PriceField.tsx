@@ -40,6 +40,7 @@ export default function PriceField<T extends FieldValues>({ name, control, ...pr
 						},
 						'& .MuiOutlinedInput-input': {
 							color: fieldState.error ? 'error.main' : 'inherit',
+							textAlign: 'right',
 						},
 						'& input:-webkit-autofill': {
 							WebkitTextFillColor: fieldState.error ? '#d32f2f' : 'inherit',
