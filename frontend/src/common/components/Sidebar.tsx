@@ -124,7 +124,7 @@ export default function Sidebar({ open }: SidebarProps) {
 
 						{open && (
 							<Box>
-								<Typography sx={{ fontWeight: 800, lineHeight: '1.2' }}>Quản lý chi tiêu</Typography>
+								<Typography sx={{ fontWeight: 700, lineHeight: '1.2' }}>Quản lý chi tiêu</Typography>
 								<Typography variant="caption" color="text.secondary">
 									Trang quản trị
 								</Typography>

@@ -2,6 +2,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
 import TransactionTable from '@/features/transactions/components/TransactionTable.tsx';
 import useTransactions from '@/features/transactions/hooks/useTransactions.ts';
@@ -21,23 +22,35 @@ export default function TransactionsPage() {
 			elevation={0}
 			sx={theme => ({
 				p: 2,
-				borderRadius: 3,
+				borderRadius: 2,
 				border: `1px solid ${theme.palette.divider}`,
 				bgcolor: 'background.paper',
+				maxHeight: 'calc(100vh - 58px - 32px)',
+				height: '100%',
+
+				display: 'flex',
+				flexDirection: 'column',
 			})}
 		>
-			<Stack spacing={3}>
+			<Stack spacing={1} sx={{ height: '100%', minHeight: 0 }}>
 				<TransactionSummary summary={transactions?.summary} />
 				<Stack direction="row" sx={{ p: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-					<Typography variant="h6" sx={{ fontWeight: 600 }}>
-						Quản lý giao dịch
-					</Typography>
+					<Box>
+						<Typography variant="h6" sx={{ fontWeight: 700 }}>
+							Quản lý giao dịch
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Theo dõi thu nhập và chi tiêu của bạn
+						</Typography>
+					</Box>
 
 					<Button variant="contained" startIcon={<AddIcon />} onClick={handleButtonCreateClicked}>
 						Thêm giao dịch
 					</Button>
 				</Stack>
-				<TransactionTable view={transactions?.data || []} />
+				<Box sx={{ flex: 1, minHeight: 0 }}>
+					<TransactionTable view={transactions?.data || []} />
+				</Box>
 				<TransactionDialog open={openDialog} onClose={handleCloseTransactionDialog} mode="create" />
 			</Stack>
 		</Paper>
