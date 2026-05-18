@@ -11,17 +11,24 @@ import { useState } from 'react';
 
 export default function TransactionsPage() {
 	const [openDialog, setOpenDialog] = useState(false);
-	const response = useTransactions();
-	const transactions = response.data;
+	const { data: transactions } = useTransactions();
 
 	const handleButtonCreateClicked = () => setOpenDialog(true);
 	const handleCloseTransactionDialog = () => setOpenDialog(false);
 
 	return (
-		<Paper>
+		<Paper
+			elevation={0}
+			sx={theme => ({
+				p: 2,
+				borderRadius: 3,
+				border: `1px solid ${theme.palette.divider}`,
+				bgcolor: 'background.paper',
+			})}
+		>
 			<Stack spacing={3}>
-				<TransactionSummary />
-				<Stack direction="row" sx={{ p: 2, alignItems: 'center', justifyContent: 'space-between' }}>
+				<TransactionSummary summary={transactions?.summary} />
+				<Stack direction="row" sx={{ p: 1, alignItems: 'center', justifyContent: 'space-between' }}>
 					<Typography variant="h6" sx={{ fontWeight: 600 }}>
 						Quản lý giao dịch
 					</Typography>

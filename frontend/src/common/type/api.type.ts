@@ -42,7 +42,7 @@ export type PaginatedResponse<T> = {
 	total: number;
 };
 
-export type ResourcePaginatedResponse<T> = {
+export type ResourcePaginatedResponse<T, S> = {
 	data: T[];
 	links: {
 		first: string | null;
@@ -60,4 +60,5 @@ export type ResourcePaginatedResponse<T> = {
 		to: number | null;
 		total: number;
 	};
+	summary?: S | null;
 };

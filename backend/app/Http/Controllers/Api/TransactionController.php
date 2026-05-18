@@ -14,36 +14,23 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $transactions = Transaction::query()
-            ->with('category:id,name,type')
+        $query = Transaction::query()
             ->where('user_id', auth()->id())
             ->when($request->filled('type'), fn ($query) => $query->where('type', $request->type))
             ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->category_id))
             ->when($request->filled('dated_from'), fn ($query) => $query->where('dated', '>=', $request->dated_from))
             ->when($request->filled('dated_to'), fn ($query) => $query->where('dated', '<=', $request->dated_to))
-            ->when($request->filled('search'), fn ($query) => $query->whereLike('note', '%' . $request->search . '%'))
-            ->orderByDesc('id')
-            ->paginate($request->integer('limit', 100));
-        return TransactionResource::collection($transactions);
-    }
-
-    public function summary(Request $request)
-    {
-        $summary = Transaction::query()
+            ->when($request->filled('search'), fn ($query) => $query->whereLike('note', '%' . $request->search . '%'));
+        $view = (clone $query)->with('category:id,name,type')->orderByDesc('id')->paginate($request->integer('limit', 100));
+        $summary = (clone $query)
             ->selectRaw("
-                COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as total_income,
-                COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as total_expense,
+                COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as totalIncome,
+                COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as totalExpense,
                 COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) - COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as balance,
-                COUNT(*) as count
+                COUNT(*) as transactionCount
             ")
-            ->where('user_id', auth()->id())
-            ->when($request->filled('type'), fn ($query) => $query->where('type', $request->type))
-            ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->category_id))
-            ->when($request->filled('dated_from'), fn ($query) => $query->where('dated', '>=', $request->dated_from))
-            ->when($request->filled('dated_to'), fn ($query) => $query->where('dated', '<=', $request->dated_to))
-            ->when($request->filled('search'), fn ($query) => $query->whereLike('note', '%' . $request->search . '%'))
             ->first();
-        return response()->json($summary);
+        return TransactionResource::collection($view)->additional(compact('summary'));
     }
 
     public function store(TransactionRequest $request)

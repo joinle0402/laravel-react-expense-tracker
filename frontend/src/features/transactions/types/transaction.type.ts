@@ -19,6 +19,13 @@ export interface Transaction {
 	};
 }
 
+export interface TransactionSummary {
+	totalIncome: number;
+	totalExpense: number;
+	balance: number;
+	transactionCount: number;
+}
+
 export interface CreateTransactionPayload {
 	type: TransactionType;
 	category_id: number;
@@ -27,4 +34,4 @@ export interface CreateTransactionPayload {
 	note?: string;
 }
 
-export type TransactionPaginated = ResourcePaginatedResponse<Transaction>;
+export type TransactionPaginated = ResourcePaginatedResponse<Transaction, TransactionSummary>;
