@@ -14,6 +14,7 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
+        $start = microtime(true);
         $query = Transaction::query()
             ->where('user_id', auth()->id())
             ->when($request->filled('type') && $request->type !== 'all', fn ($query) => $query->where('type', $request->type))
@@ -21,7 +22,7 @@ class TransactionController extends Controller
             ->when($request->filled('fromDate'), fn ($query) => $query->where('dated', '>=', $request->fromDate))
             ->when($request->filled('toDate'), fn ($query) => $query->where('dated', '<=', $request->toDate))
             ->when($request->filled('search'), fn ($query) => $query->whereLike('note', '%' . $request->search . '%'));
-        $view = (clone $query)->with('category:id,name,type')->orderByDesc('id')->paginate($request->integer('limit', 100));
+        $view = (clone $query)->with('category:id,name,type')->orderByDesc('id')->simplePaginate($request->integer('limit', 100));
         $summary = (clone $query)
             ->selectRaw("
                 COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as totalIncome,
@@ -30,6 +31,9 @@ class TransactionController extends Controller
                 COUNT(*) as transactionCount
             ")
             ->first();
+        logger()->info('transactions index total', [
+            'ms' => round((microtime(true) - $start) * 1000, 2),
+        ]);
         return TransactionResource::collection($view)->additional(compact('summary'));
     }
 

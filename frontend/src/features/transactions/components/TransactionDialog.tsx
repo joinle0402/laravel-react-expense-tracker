@@ -47,21 +47,15 @@ const TRANSACTION_TYPE_OPTIONS = [
 
 export default function TransactionDialog({ open = true, mode, onClose }: TransactionDialogProps) {
 	const isEdit = mode === 'update';
-	const {
-		control,
-		setValue,
-		handleSubmit,
-		formState: { isSubmitting },
-		setError,
-		reset,
-	} = useForm({
+	const { control, setValue, handleSubmit, formState, setError, reset } = useForm({
 		resolver: zodResolver(Schema),
 		defaultValues: { type: 'expense', category_id: null, amount: null, dated: getCurrentDate(), note: '' },
 	});
+	const { isSubmitting } = formState;
 	const { mutateAsync: create, isPending: isCreating } = useCreateTransaction();
 
 	const type = useWatch({ control, name: 'type' });
-	const { data: categories = [], isLoading } = useCategoryOptions(type);
+	const { data: categories = [], isLoading } = useCategoryOptions(type, { enabled: open });
 	const categoryOptions = categories.map(item => ({ value: item.id, label: item.name }));
 	const isSubmitted = isCreating || isSubmitting;
 
