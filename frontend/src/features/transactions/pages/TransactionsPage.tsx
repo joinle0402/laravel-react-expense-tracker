@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -8,11 +9,23 @@ import TransactionTable from '@/features/transactions/components/TransactionTabl
 import useTransactions from '@/features/transactions/hooks/useTransactions.ts';
 import TransactionSummary from '@/features/transactions/components/TransactionSummary.tsx';
 import TransactionDialog from '@/features/transactions/components/TransactionDialog.tsx';
-import { useState } from 'react';
+import TransactionFilters from '@/features/transactions/components/TransactionFilters.tsx';
+import type { TransactionFiltersValue } from '@/features/transactions/types/transaction.type.ts';
+import dayjs from 'dayjs';
+import useDebounce from '@/common/hooks/useDebounce.ts';
+
+const initialFilters: TransactionFiltersValue = {
+	search: '',
+	type: 'all',
+	fromDate: dayjs().startOf('month').format('YYYY-MM-DD'),
+	toDate: dayjs().format('YYYY-MM-DD'),
+};
 
 export default function TransactionsPage() {
+	const [filters, setFilters] = useState<TransactionFiltersValue>(initialFilters);
+	const debouncedSearch = useDebounce(filters.search, 400);
 	const [openDialog, setOpenDialog] = useState(false);
-	const { data: transactions } = useTransactions();
+	const { data: transactions } = useTransactions({ ...filters, search: debouncedSearch });
 
 	const handleButtonCreateClicked = () => setOpenDialog(true);
 	const handleCloseTransactionDialog = () => setOpenDialog(false);
@@ -48,6 +61,7 @@ export default function TransactionsPage() {
 						Thêm giao dịch
 					</Button>
 				</Stack>
+				<TransactionFilters value={filters} onChange={setFilters} onReset={() => setFilters(initialFilters)} />
 				<Box sx={{ flex: 1, minHeight: 0 }}>
 					<TransactionTable view={transactions?.data || []} />
 				</Box>

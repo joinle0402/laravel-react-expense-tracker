@@ -35,3 +35,12 @@ export interface CreateTransactionPayload {
 }
 
 export type TransactionPaginated = ResourcePaginatedResponse<Transaction, TransactionSummary>;
+
+export type TransactionTypeFilter = 'all' | 'income' | 'expense';
+
+export type TransactionFiltersValue = {
+	search: string;
+	type: TransactionTypeFilter;
+	fromDate: string | null;
+	toDate: string | null;
+};

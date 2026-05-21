@@ -19,7 +19,7 @@ type SummaryCardProps = {
 
 function SummaryCard({ title, value = 0, color, isCurrency = false, icon }: SummaryCardProps) {
 	const formattedValue = !value
-		? '-'
+		? '0'
 		: isCurrency
 			? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value)
 			: value?.toLocaleString('vi-VN');
