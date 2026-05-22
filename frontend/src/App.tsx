@@ -5,7 +5,7 @@ import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage.tsx';
 import PublicRoute from '@/features/auth/components/PublicRoute.tsx';
 import DashboardPage from '@/features/admin/pages/DashboardPage.tsx';
 import AdminLayout from '@/common/layout/AdminLayout.tsx';
-import TransactionsPage from '@/features/transactions/pages/TransactionsPage.tsx';
+import TransactionPage from './features/transactions/pages/TransactionPage.tsx';
 import CategoryPage from '@/features/category/page/CategoryPage.tsx';
 import ButgetPage from '@/features/budget/pages/ButgetPage.tsx';
 import SettingPage from '@/features/setting/pages/SettingPage.tsx';
@@ -26,7 +26,7 @@ export default function App() {
 				<Route element={<ProtectedRoute />}>
 					<Route path="/admin" element={<AdminLayout />}>
 						<Route path="dashboard" element={<DashboardPage />} />
-						<Route path="transactions" element={<TransactionsPage />} />
+						<Route path="transactions" element={<TransactionPage />} />
 						<Route path="categories" element={<CategoryPage />} />
 						<Route path="budgets" element={<ButgetPage />} />
 						<Route path="settings" element={<SettingPage />} />

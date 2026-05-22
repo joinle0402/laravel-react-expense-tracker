@@ -18,6 +18,7 @@ import TableContainer from '@mui/material/TableContainer';
 
 interface CategoryTableProps {
 	view: Transaction[];
+	onDelete: (transaction: Transaction) => void;
 }
 
 const tableHeadCellStyle = {
@@ -29,9 +30,11 @@ const tableHeadCellStyle = {
 	whiteSpace: 'nowrap',
 };
 
-export default function TransactionTable({ view }: CategoryTableProps) {
+export default function TransactionTable({ view, onDelete }: CategoryTableProps) {
 	return (
-		<TableContainer sx={{ height: '100%', border: 1, borderColor: 'divider', borderRadius: 1, overflow: 'auto' }}>
+		<TableContainer
+			sx={{ height: '100%', border: 1, borderColor: 'divider', borderRadius: 1, overflow: 'auto', maxHeight: 'calc(100vh - 370px)' }}
+		>
 			<Table stickyHeader size="small">
 				<TableHead>
 					<TableRow sx={{ bgcolor: 'grey.50' }}>
@@ -117,8 +120,8 @@ export default function TransactionTable({ view }: CategoryTableProps) {
 												<EditIcon fontSize="small" />
 											</IconButton>
 										</Tooltip>
-										<Tooltip title="Sửa">
-											<IconButton size="small" color="error">
+										<Tooltip title="Xoá">
+											<IconButton size="small" color="error" onClick={() => onDelete(item)}>
 												<DeleteIcon fontSize="small" />
 											</IconButton>
 										</Tooltip>

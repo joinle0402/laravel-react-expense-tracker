@@ -15,6 +15,7 @@ export const handleApiError = <TFieldValues extends FieldValues>({
 	setError,
 	defaultMessage = 'Có lỗi xảy ra, vui lòng thử lại.',
 }: HandleApiErrorParams<TFieldValues>) => {
+	console.log(error);
 	if (isAxiosError<ApiErrorResponse>(error)) {
 		const status = error.response?.status;
 		const data = error.response?.data;

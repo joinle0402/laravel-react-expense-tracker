@@ -14,14 +14,20 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $start = microtime(true);
         $query = Transaction::query()
             ->where('user_id', auth()->id())
             ->when($request->filled('type') && $request->type !== 'all', fn ($query) => $query->where('type', $request->type))
             ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->category_id))
             ->when($request->filled('fromDate'), fn ($query) => $query->where('dated', '>=', $request->fromDate))
             ->when($request->filled('toDate'), fn ($query) => $query->where('dated', '<=', $request->toDate))
-            ->when($request->filled('search'), fn ($query) => $query->whereLike('note', '%' . $request->search . '%'));
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = trim($request->search);
+                $query->where('note', 'like', "%$search%")
+                    ->orWhere('amount', 'like', "%$search%")
+                    ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                        $categoryQuery->where('name', 'like', "%$search%");
+                    });
+            });
         $view = (clone $query)->with('category:id,name,type')->orderByDesc('id')->simplePaginate($request->integer('limit', 100));
         $summary = (clone $query)
             ->selectRaw("
@@ -31,9 +37,6 @@ class TransactionController extends Controller
                 COUNT(*) as transactionCount
             ")
             ->first();
-        logger()->info('transactions index total', [
-            'ms' => round((microtime(true) - $start) * 1000, 2),
-        ]);
         return TransactionResource::collection($view)->additional(compact('summary'));
     }
 
@@ -82,7 +85,7 @@ class TransactionController extends Controller
     {
         $ids = collect(explode(',', $request->id))->map('ceil')->filter(fn ($id) => $id > 0)->unique()->values();
         throwIf($ids->isEmpty(), "Danh sách ID không hợp lệ.", 422);
-        Category::query()->where('user_id', auth()->id())->whereIn('id', $ids)->delete();
+        Transaction::query()->where('user_id', auth()->id())->whereIn('id', $ids)->delete();
         return response()->json(['message' => 'Xóa danh mục thành công.',]);
     }
 }
