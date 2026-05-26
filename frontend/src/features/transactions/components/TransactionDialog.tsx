@@ -93,7 +93,19 @@ export default function TransactionDialog({ open = true, mode, onClose }: Transa
 				</DialogContent>
 				<DialogActions sx={{ px: 3 }}>
 					<Button onClick={onClose}>Huỷ</Button>
-					<Button type="submit" variant="contained" loading={isSubmitted} loadingIndicator="Đang lưu...">
+					<Button
+						type="submit"
+						variant="contained"
+						loading={isSubmitted}
+						loadingIndicator="Đang lưu..."
+						sx={{
+							minWidth: 120,
+							whiteSpace: 'nowrap',
+							'& .MuiButton-loadingIndicator': {
+								whiteSpace: 'nowrap',
+							},
+						}}
+					>
 						{isEdit ? 'Cập nhật' : 'Thêm mới'}
 					</Button>
 				</DialogActions>

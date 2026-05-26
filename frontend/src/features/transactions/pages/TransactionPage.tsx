@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type ChangeEvent, type MouseEvent, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -24,10 +24,12 @@ const initialFilters: TransactionFiltersValue = {
 };
 
 export default function TransactionPage() {
+	const [page, setPage] = useState<number>(0);
+	const [limit, setLimit] = useState<number>(100);
 	const [filters, setFilters] = useState<TransactionFiltersValue>(initialFilters);
 	const debouncedSearch = useDebounce(filters.search, 400);
 	const [openDialog, setOpenDialog] = useState(false);
-	const { data: transactions } = useTransactions({ ...filters, search: debouncedSearch });
+	const { data: transactions } = useTransactions({ ...filters, search: debouncedSearch, page: page + 1, limit });
 	const { mutateAsync: deleteTransaction } = useDeleteTransaction();
 	const { deleteConfirm } = useConfirmDialog();
 
@@ -35,11 +37,19 @@ export default function TransactionPage() {
 	const handleCloseTransactionDialog = () => setOpenDialog(false);
 
 	const handleDeleteTransaction = async (transaction: Transaction) => {
-		console.log('handleDeleteTransaction', transaction);
 		await deleteConfirm({
 			title: `Xóa giao dịch ${transaction.type === 'expense' ? 'chi tiêu' : 'thu nhập'}?`,
 			onConfirm: () => deleteTransaction(transaction.id),
 		});
+	};
+
+	const handlePageChange = (_event: MouseEvent<HTMLButtonElement> | null, page: number) => {
+		setPage(page);
+	};
+
+	const handleRowsPerPageChange = (event: ChangeEvent<HTMLInputElement>) => {
+		setLimit(parseInt(event.target.value, 10));
+		setPage(0);
 	};
 
 	return (
@@ -76,7 +86,15 @@ export default function TransactionPage() {
 				</Stack>
 				<TransactionFilters value={filters} onChange={setFilters} onReset={() => setFilters(initialFilters)} />
 				<Box>
-					<TransactionTable view={transactions?.data || []} onDelete={handleDeleteTransaction} />
+					<TransactionTable
+						view={transactions?.data || []}
+						onDelete={handleDeleteTransaction}
+						total={transactions?.summary?.transactionCount || 0}
+						page={page}
+						limit={limit}
+						onPageChange={handlePageChange}
+						onRowsPerPageChange={handleRowsPerPageChange}
+					/>
 				</Box>
 				<TransactionDialog open={openDialog} onClose={handleCloseTransactionDialog} mode="create" />
 			</Stack>

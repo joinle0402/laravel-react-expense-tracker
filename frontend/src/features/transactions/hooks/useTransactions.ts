@@ -3,7 +3,12 @@ import { transactionService } from '@/features/transactions/services/transaction
 import type { TransactionFiltersValue } from '@/features/transactions/types/transaction.type.ts';
 import { transactionKeys } from '@/features/transactions/constants/transactionKeys.tsx';
 
-export default function useTransactions(filters: TransactionFiltersValue) {
+export type GetTransactionsParams = TransactionFiltersValue & {
+	page: number;
+	limit: number;
+};
+
+export default function useTransactions(filters: GetTransactionsParams) {
 	return useQuery({
 		queryKey: transactionKeys.list(filters),
 		queryFn: () => transactionService.findAll(filters),
