@@ -29,7 +29,7 @@ export default function TransactionPage() {
 	const [filters, setFilters] = useState<TransactionFiltersValue>(initialFilters);
 	const debouncedSearch = useDebounce(filters.search, 400);
 	const [openDialog, setOpenDialog] = useState(false);
-	const { data: transactions } = useTransactions({ ...filters, search: debouncedSearch, page: page + 1, limit });
+	const { data: transactions, isLoading = false } = useTransactions({ ...filters, search: debouncedSearch, page: page + 1, limit });
 	const { mutateAsync: deleteTransaction } = useDeleteTransaction();
 	const { deleteConfirm } = useConfirmDialog();
 
@@ -49,6 +49,16 @@ export default function TransactionPage() {
 
 	const handleRowsPerPageChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setLimit(parseInt(event.target.value, 10));
+		setPage(0);
+	};
+
+	const handleTransactionFiltersChange = (nextFilters: TransactionFiltersValue) => {
+		setFilters(nextFilters);
+		setPage(0);
+	};
+
+	const handleTransactionFiltersReset = () => {
+		setFilters(initialFilters);
 		setPage(0);
 	};
 
@@ -84,7 +94,7 @@ export default function TransactionPage() {
 						Thêm giao dịch
 					</Button>
 				</Stack>
-				<TransactionFilters value={filters} onChange={setFilters} onReset={() => setFilters(initialFilters)} />
+				<TransactionFilters value={filters} onChange={handleTransactionFiltersChange} onReset={handleTransactionFiltersReset} />
 				<Box>
 					<TransactionTable
 						view={transactions?.data || []}
@@ -92,6 +102,8 @@ export default function TransactionPage() {
 						total={transactions?.summary?.transactionCount || 0}
 						page={page}
 						limit={limit}
+						search={filters?.search}
+						loading={isLoading}
 						onPageChange={handlePageChange}
 						onRowsPerPageChange={handleRowsPerPageChange}
 					/>

@@ -9,15 +9,15 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
-import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import type { ChangeEvent, MouseEvent } from 'react';
+import EmptyRow from '@/common/components/table/EmptyRow.tsx';
+import LoaddingRow from '@/common/components/table/LoaddingRow.tsx';
 
 interface CategoryTableProps {
 	view: Transaction[];
@@ -25,6 +25,8 @@ interface CategoryTableProps {
 	total: number;
 	page: number;
 	limit: number;
+	search: string;
+	loading: boolean;
 	onPageChange: (event: MouseEvent<HTMLButtonElement> | null, page: number) => void;
 	onRowsPerPageChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -38,8 +40,17 @@ const tableHeadCellStyle = {
 	whiteSpace: 'nowrap',
 };
 
-export default function TransactionTable({ view, total, page, limit, onPageChange, onRowsPerPageChange, onDelete }: CategoryTableProps) {
-	console.log(total, page, limit);
+export default function TransactionTable({
+	view,
+	loading,
+	total,
+	page,
+	limit,
+	search,
+	onPageChange,
+	onRowsPerPageChange,
+	onDelete,
+}: CategoryTableProps) {
 	return (
 		<Paper>
 			<TableContainer
@@ -63,22 +74,10 @@ export default function TransactionTable({ view, total, page, limit, onPageChang
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{view.length === 0 ? (
-							<TableRow>
-								<TableCell colSpan={8}>
-									<Box sx={{ textAlign: 'center', py: 6 }}>
-										<Typography variant="h6">Chưa có giao dịch nào</Typography>
-
-										<Typography color="text.secondary" sx={{ mt: 1 }}>
-											Hãy thêm giao dịch đầu tiên để bắt đầu quản lý thu chi.
-										</Typography>
-
-										<Button variant="contained" sx={{ mt: 2 }}>
-											Thêm giao dịch
-										</Button>
-									</Box>
-								</TableCell>
-							</TableRow>
+						{loading ? (
+							<LoaddingRow colSpan={8} text="Đang tải giao dịch..." />
+						) : view.length === 0 ? (
+							<EmptyRow colSpan={8} search={search} />
 						) : (
 							view.map((item, index) => (
 								<TableRow
