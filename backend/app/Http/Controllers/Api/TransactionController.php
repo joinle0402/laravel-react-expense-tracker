@@ -28,7 +28,21 @@ class TransactionController extends Controller
                         $categoryQuery->where('name', 'like', "%$search%");
                     });
             });
-        $view = (clone $query)->with('category:id,name,type')->orderByDesc('id')->simplePaginate($request->integer('limit', 100));
+
+        $allowedSorts = [
+            'dated' => 'dated',
+            'type' => 'type',
+            'amount' => 'amount',
+            'created_at' => 'created_at',
+            'category' => 'category.name',
+        ];
+        $sortBy = $request->input('sortBy');
+        $sortOrder = $request->input('sortOrder');
+        $canSort = $sortBy && isset($allowedSorts[$sortBy]) && in_array($sortOrder, ['asc', 'desc'], true);
+        $view = (clone $query)
+                ->with('category:id,name,type')
+                ->when($canSort, fn ($query) => $query->orderBy($allowedSorts[$sortBy], $sortOrder), fn ($query) => $query->orderByDesc('id'))
+                ->simplePaginate($request->integer('limit', 100));
         $summary = (clone $query)
             ->selectRaw("
                 COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as totalIncome,

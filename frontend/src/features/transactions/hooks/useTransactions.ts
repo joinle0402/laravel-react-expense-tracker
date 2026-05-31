@@ -6,6 +6,8 @@ import { transactionKeys } from '@/features/transactions/constants/transactionKe
 export type GetTransactionsParams = TransactionFiltersValue & {
 	page: number;
 	limit: number;
+	sortBy?: string;
+	sortOrder?: 'asc' | 'desc' | null;
 };
 
 export default function useTransactions(filters: GetTransactionsParams) {

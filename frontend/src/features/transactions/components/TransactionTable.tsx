@@ -1,10 +1,6 @@
 import type { Transaction } from '@/features/transactions/types/transaction.type.ts';
+import { DataGrid, type GridPaginationModel, type GridSortModel } from '@mui/x-data-grid';
 import { formatCurrency, formatDate } from '@/common/utils/format.ts';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import TableBody from '@mui/material/TableBody';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -13,11 +9,6 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Paper from '@mui/material/Paper';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-import type { ChangeEvent, MouseEvent } from 'react';
-import EmptyRow from '@/common/components/table/EmptyRow.tsx';
-import LoaddingRow from '@/common/components/table/LoaddingRow.tsx';
 
 interface CategoryTableProps {
 	view: Transaction[];
@@ -27,18 +18,10 @@ interface CategoryTableProps {
 	limit: number;
 	search: string;
 	loading: boolean;
-	onPageChange: (event: MouseEvent<HTMLButtonElement> | null, page: number) => void;
-	onRowsPerPageChange: (event: ChangeEvent<HTMLInputElement>) => void;
+	sortModel: GridSortModel;
+	onSortModelChange: (sortModel: GridSortModel) => void;
+	onPaginationModelChange: (model: GridPaginationModel) => void;
 }
-
-const tableHeadCellStyle = {
-	bgcolor: '#F8FAFC',
-	fontWeight: 700,
-	fontSize: 12,
-	color: 'text.secondary',
-	textTransform: 'uppercase',
-	whiteSpace: 'nowrap',
-};
 
 export default function TransactionTable({
 	view,
@@ -47,111 +30,204 @@ export default function TransactionTable({
 	page,
 	limit,
 	search,
-	onPageChange,
-	onRowsPerPageChange,
+	sortModel,
+	onSortModelChange,
+	onPaginationModelChange,
 	onDelete,
 }: CategoryTableProps) {
 	return (
-		<Paper>
-			<TableContainer
-				sx={{ height: '100%', border: 1, borderColor: 'divider', borderRadius: 1, overflow: 'auto', maxHeight: 'calc(100vh - 420px)' }}
-			>
-				<Table stickyHeader size="small">
-					<TableHead>
-						<TableRow sx={{ bgcolor: 'grey.50' }}>
-							<TableCell sx={tableHeadCellStyle}>#</TableCell>
-							<TableCell sx={tableHeadCellStyle}>Ngày giao dịch</TableCell>
-							<TableCell sx={tableHeadCellStyle}>Loại giao dịch</TableCell>
-							<TableCell sx={tableHeadCellStyle}>Danh mục</TableCell>
-							<TableCell align="right" sx={tableHeadCellStyle}>
-								Số tiền
-							</TableCell>
-							<TableCell sx={tableHeadCellStyle}>Ghi chú</TableCell>
-							<TableCell sx={tableHeadCellStyle}>Ngày tạo</TableCell>
-							<TableCell align="right" sx={tableHeadCellStyle}>
-								Hành động
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{loading ? (
-							<LoaddingRow colSpan={8} text="Đang tải giao dịch..." />
-						) : view.length === 0 ? (
-							<EmptyRow colSpan={8} search={search} />
-						) : (
-							view.map((item, index) => (
-								<TableRow
-									key={item.id}
-									hover
-									sx={{
-										'&:last-child td': {
-											borderBottom: 0,
-										},
-									}}
-								>
-									<TableCell>{page * limit + index + 1}</TableCell>
-									<TableCell>{formatDate(item.dated)}</TableCell>
-									<TableCell>
-										<Chip
-											label={item.type === 'income' ? 'Thu nhập' : 'Chi tiêu'}
-											color={item.type === 'income' ? 'success' : 'error'}
-											size="small"
-											variant="filled"
-											sx={{ fontWeight: 600 }}
-										/>
-									</TableCell>
-									<TableCell>{item.category?.name || '-'}</TableCell>
-									<TableCell align="right">
-										<Typography sx={{ fontWeight: 600, color: item.type === 'income' ? 'success.main' : 'error.main' }}>
-											{item.type === 'income' ? '+' : '-'}
-											{formatCurrency(item.amount)}
-										</Typography>
-									</TableCell>
-									<TableCell>
-										<Typography
-											variant="body2"
-											sx={{
-												maxWidth: 220,
-												overflow: 'hidden',
-												textOverflow: 'ellipsis',
-												whiteSpace: 'nowrap',
-											}}
-											title={item.note}
-										>
-											{item.note || '-'}
-										</Typography>
-									</TableCell>
-									<TableCell>{formatDate(item.created_at)}</TableCell>
-									<TableCell align="right">
-										<Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
-											<Tooltip title="Sửa">
-												<IconButton size="small" color="primary">
-													<EditIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-											<Tooltip title="Xoá">
-												<IconButton size="small" color="error" onClick={() => onDelete(item)}>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-										</Stack>
-									</TableCell>
-								</TableRow>
-							))
-						)}
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<TablePagination
-				component="div"
-				count={total}
-				page={page}
-				rowsPerPage={limit}
-				onPageChange={onPageChange}
-				onRowsPerPageChange={onRowsPerPageChange}
-				rowsPerPageOptions={[10, 20, 50, 100, 500]}
-				labelRowsPerPage="Số dòng mỗi trang"
-				labelDisplayedRows={({ from, to, count }) => `${from}-${to} trong ${count}`}
+		<Paper
+			elevation={0}
+			sx={{
+				border: 1,
+				borderColor: 'divider',
+				borderRadius: 1,
+				overflow: 'hidden',
+				height: 'calc(100vh - 370px)',
+				minHeight: 360,
+			}}
+		>
+			<DataGrid
+				disableColumnMenu
+				disableColumnFilter
+				disableColumnSelector
+				disableDensitySelector
+				disableRowSelectionOnClick
+				rows={view}
+				columns={[
+					{
+						field: 'index',
+						headerName: '#',
+						width: 70,
+						sortable: false,
+						filterable: false,
+						renderCell: params => {
+							const rowIndex = params.api.getRowIndexRelativeToVisibleRows(params.id);
+							return page * limit + rowIndex + 1;
+						},
+					},
+					{
+						field: 'dated',
+						headerName: 'Ngày giao dịch',
+						width: 150,
+						valueFormatter: value => formatDate(value),
+					},
+					{
+						field: 'type',
+						headerName: 'Loại giao dịch',
+						width: 150,
+						renderCell: params => (
+							<Chip
+								label={params.row.type === 'income' ? 'Thu nhập' : 'Chi tiêu'}
+								color={params.row.type === 'income' ? 'success' : 'error'}
+								size="small"
+								variant="filled"
+								sx={{ fontWeight: 600 }}
+							/>
+						),
+					},
+					{
+						field: 'category',
+						headerName: 'Danh mục',
+						sortable: false,
+						width: 160,
+						valueGetter: (_value, row) => row.category?.name || '-',
+					},
+					{
+						field: 'amount',
+						headerName: 'Số tiền',
+						width: 160,
+						align: 'right',
+						headerAlign: 'right',
+						renderCell: params => (
+							<Typography
+								sx={{
+									fontWeight: 600,
+									color: params.row.type === 'income' ? 'success.main' : 'error.main',
+								}}
+							>
+								{params.row.type === 'income' ? '+' : '-'}
+								{formatCurrency(params.row.amount)}
+							</Typography>
+						),
+					},
+					{
+						field: 'note',
+						headerName: 'Ghi chú',
+						flex: 1,
+						minWidth: 220,
+						sortable: false,
+						renderCell: params => (
+							<Typography
+								variant="body2"
+								sx={{
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+								}}
+								title={params.row.note || ''}
+							>
+								{params.row.note || '-'}
+							</Typography>
+						),
+					},
+					{
+						field: 'created_at',
+						headerName: 'Ngày tạo',
+						width: 150,
+						valueFormatter: value => formatDate(value),
+					},
+					{
+						field: 'actions',
+						headerName: 'Hành động',
+						width: 130,
+						align: 'right',
+						headerAlign: 'right',
+						sortable: false,
+						filterable: false,
+						renderCell: params => (
+							<Stack
+								direction="row"
+								spacing={1}
+								sx={{
+									width: '100%',
+									height: '100%',
+									justifyContent: 'flex-end',
+									alignItems: 'center',
+								}}
+							>
+								<Tooltip title="Sửa">
+									<IconButton size="small" color="primary">
+										<EditIcon fontSize="small" />
+									</IconButton>
+								</Tooltip>
+
+								<Tooltip title="Xoá">
+									<IconButton size="small" color="error" onClick={() => onDelete(params.row)}>
+										<DeleteIcon fontSize="small" />
+									</IconButton>
+								</Tooltip>
+							</Stack>
+						),
+					},
+				]}
+				getRowId={row => row.id}
+				loading={loading}
+				rowCount={total}
+				paginationMode="server"
+				paginationModel={{ page, pageSize: limit }}
+				onPaginationModelChange={onPaginationModelChange}
+				sortingOrder={['asc', 'desc', null]}
+				sortingMode="server"
+				sortModel={sortModel}
+				onSortModelChange={onSortModelChange}
+				pageSizeOptions={[10, 20, 50, 100]}
+				rowHeight={48}
+				columnHeaderHeight={44}
+				localeText={{
+					noRowsLabel: search ? 'Không tìm thấy dữ liệu phù hợp' : 'Không có dữ liệu',
+					paginationDisplayedRows: ({ from, to, count }) => `${from}-${to} trong ${count}`,
+					paginationRowsPerPage: 'Số dòng mỗi trang',
+				}}
+				sx={{
+					'& .MuiDataGrid-columnHeaders': {
+						bgcolor: '#F8FAFC',
+						borderBottom: theme => `1px solid ${theme.palette.divider}`,
+					},
+
+					'& .MuiDataGrid-columnHeaderTitle': {
+						fontWeight: 700,
+						fontSize: 12,
+						color: 'text.secondary',
+						textTransform: 'uppercase',
+					},
+
+					'& .MuiDataGrid-row:hover': {
+						bgcolor: 'action.hover',
+					},
+
+					'& .MuiDataGrid-cell': {
+						borderBottom: theme => `1px solid ${theme.palette.divider}`,
+						outline: 'none',
+					},
+
+					'& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus': {
+						outline: 'none',
+					},
+
+					'& .MuiDataGrid-footerContainer': {
+						minHeight: 52,
+						borderTop: theme => `1px solid ${theme.palette.divider}`,
+					},
+
+					'& .MuiTablePagination-toolbar': {
+						minHeight: 52,
+					},
+
+					'& .MuiDataGrid-overlayWrapper': {
+						minHeight: 220,
+					},
+				}}
 			/>
 		</Paper>
 	);

@@ -1,4 +1,4 @@
-import { type ChangeEvent, type MouseEvent, useState } from 'react';
+import { useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import useDebounce from '@/common/hooks/useDebounce.ts';
 import useDeleteTransaction from '@/features/transactions/hooks/useDeleteTransaction.ts';
 import useConfirmDialog from '@/common/hooks/useConfirmDialog.ts';
+import type { GridSortModel } from '@mui/x-data-grid';
 
 const initialFilters: TransactionFiltersValue = {
 	search: '',
@@ -26,10 +27,18 @@ const initialFilters: TransactionFiltersValue = {
 export default function TransactionPage() {
 	const [page, setPage] = useState<number>(0);
 	const [limit, setLimit] = useState<number>(100);
+	const [sortModel, setSortModel] = useState<GridSortModel>([]);
 	const [filters, setFilters] = useState<TransactionFiltersValue>(initialFilters);
 	const debouncedSearch = useDebounce(filters.search, 400);
 	const [openDialog, setOpenDialog] = useState(false);
-	const { data: transactions, isLoading = false } = useTransactions({ ...filters, search: debouncedSearch, page: page + 1, limit });
+	const { data: transactions, isLoading = false } = useTransactions({
+		...filters,
+		search: debouncedSearch,
+		page: page + 1,
+		limit,
+		sortBy: sortModel[0]?.field,
+		sortOrder: sortModel[0]?.sort || undefined,
+	});
 	const { mutateAsync: deleteTransaction } = useDeleteTransaction();
 	const { deleteConfirm } = useConfirmDialog();
 
@@ -43,12 +52,13 @@ export default function TransactionPage() {
 		});
 	};
 
-	const handlePageChange = (_event: MouseEvent<HTMLButtonElement> | null, page: number) => {
-		setPage(page);
+	const handlePaginationModelChange = (model: { page: number; pageSize: number }) => {
+		setPage(model.page);
+		setLimit(model.pageSize);
 	};
 
-	const handleRowsPerPageChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setLimit(parseInt(event.target.value, 10));
+	const handleSortModelChange = (model: GridSortModel) => {
+		setSortModel(model.slice(0, 1));
 		setPage(0);
 	};
 
@@ -104,8 +114,9 @@ export default function TransactionPage() {
 						limit={limit}
 						search={filters?.search}
 						loading={isLoading}
-						onPageChange={handlePageChange}
-						onRowsPerPageChange={handleRowsPerPageChange}
+						sortModel={sortModel}
+						onSortModelChange={handleSortModelChange}
+						onPaginationModelChange={handlePaginationModelChange}
 					/>
 				</Box>
 				<TransactionDialog open={openDialog} onClose={handleCloseTransactionDialog} mode="create" />
