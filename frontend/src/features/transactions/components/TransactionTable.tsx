@@ -1,5 +1,5 @@
 import type { Transaction } from '@/features/transactions/types/transaction.type.ts';
-import { DataGrid, type GridPaginationModel, type GridSortModel } from '@mui/x-data-grid';
+import { DataGrid, type GridPaginationModel, type GridRowSelectionModel, type GridSortModel } from '@mui/x-data-grid';
 import { formatCurrency, formatDate } from '@/common/utils/format.ts';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
@@ -18,6 +18,8 @@ interface CategoryTableProps {
 	limit: number;
 	search: string;
 	loading: boolean;
+	rowSelectionModel: GridRowSelectionModel;
+	onRowSelectionModelChange: (model: GridRowSelectionModel) => void;
 	sortModel: GridSortModel;
 	onSortModelChange: (sortModel: GridSortModel) => void;
 	onPaginationModelChange: (model: GridPaginationModel) => void;
@@ -31,6 +33,8 @@ export default function TransactionTable({
 	limit,
 	search,
 	sortModel,
+	rowSelectionModel,
+	onRowSelectionModelChange,
 	onSortModelChange,
 	onPaginationModelChange,
 	onDelete,
@@ -48,6 +52,10 @@ export default function TransactionTable({
 			}}
 		>
 			<DataGrid
+				checkboxSelection
+				keepNonExistentRowsSelected
+				rowSelectionModel={rowSelectionModel}
+				onRowSelectionModelChange={onRowSelectionModelChange}
 				disableColumnMenu
 				disableColumnFilter
 				disableColumnSelector

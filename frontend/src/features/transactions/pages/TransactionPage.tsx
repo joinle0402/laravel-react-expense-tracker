@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -15,7 +16,8 @@ import dayjs from 'dayjs';
 import useDebounce from '@/common/hooks/useDebounce.ts';
 import useDeleteTransaction from '@/features/transactions/hooks/useDeleteTransaction.ts';
 import useConfirmDialog from '@/common/hooks/useConfirmDialog.ts';
-import type { GridSortModel } from '@mui/x-data-grid';
+import DeleteIcon from '@mui/icons-material/Delete';
+import useBulkDeleteTransaction from '@/features/transactions/hooks/useBulkDeleteTransaction.ts';
 
 const initialFilters: TransactionFiltersValue = {
 	search: '',
@@ -27,6 +29,8 @@ const initialFilters: TransactionFiltersValue = {
 export default function TransactionPage() {
 	const [page, setPage] = useState<number>(0);
 	const [limit, setLimit] = useState<number>(100);
+	const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>({ type: 'include', ids: new Set() });
+	const selectedIds = [...rowSelectionModel.ids];
 	const [sortModel, setSortModel] = useState<GridSortModel>([]);
 	const [filters, setFilters] = useState<TransactionFiltersValue>(initialFilters);
 	const debouncedSearch = useDebounce(filters.search, 400);
@@ -40,6 +44,7 @@ export default function TransactionPage() {
 		sortOrder: sortModel[0]?.sort || undefined,
 	});
 	const { mutateAsync: deleteTransaction } = useDeleteTransaction();
+	const { mutateAsync: bulkDeleteTransaction } = useBulkDeleteTransaction();
 	const { deleteConfirm } = useConfirmDialog();
 
 	const handleButtonCreateClicked = () => setOpenDialog(true);
@@ -52,24 +57,39 @@ export default function TransactionPage() {
 		});
 	};
 
+	const handleBulkDeleteTransactions = async () => {
+		if (selectedIds.length === 0) return;
+		await deleteConfirm({
+			title: `Xóa ${selectedIds.length} giao dịch đã chọn?`,
+			onConfirm: async () => {
+				await bulkDeleteTransaction(selectedIds as string[]);
+				setRowSelectionModel({ type: 'include', ids: new Set() });
+			},
+		});
+	};
+
 	const handlePaginationModelChange = (model: { page: number; pageSize: number }) => {
 		setPage(model.page);
 		setLimit(model.pageSize);
+		setRowSelectionModel({ type: 'include', ids: new Set() });
 	};
 
 	const handleSortModelChange = (model: GridSortModel) => {
 		setSortModel(model.slice(0, 1));
 		setPage(0);
+		setRowSelectionModel({ type: 'include', ids: new Set() });
 	};
 
 	const handleTransactionFiltersChange = (nextFilters: TransactionFiltersValue) => {
 		setFilters(nextFilters);
 		setPage(0);
+		setRowSelectionModel({ type: 'include', ids: new Set() });
 	};
 
 	const handleTransactionFiltersReset = () => {
 		setFilters(initialFilters);
 		setPage(0);
+		setRowSelectionModel({ type: 'include', ids: new Set() });
 	};
 
 	return (
@@ -100,9 +120,17 @@ export default function TransactionPage() {
 						</Typography>
 					</Box>
 
-					<Button variant="contained" startIcon={<AddIcon />} onClick={handleButtonCreateClicked}>
-						Thêm giao dịch
-					</Button>
+					<Stack direction="row" spacing={1}>
+						{selectedIds.length > 0 && (
+							<Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={handleBulkDeleteTransactions}>
+								Xóa đã chọn ({selectedIds.length})
+							</Button>
+						)}
+
+						<Button variant="contained" startIcon={<AddIcon />} onClick={handleButtonCreateClicked}>
+							Thêm giao dịch
+						</Button>
+					</Stack>
 				</Stack>
 				<TransactionFilters value={filters} onChange={handleTransactionFiltersChange} onReset={handleTransactionFiltersReset} />
 				<Box>
@@ -115,6 +143,8 @@ export default function TransactionPage() {
 						search={filters?.search}
 						loading={isLoading}
 						sortModel={sortModel}
+						rowSelectionModel={rowSelectionModel}
+						onRowSelectionModelChange={setRowSelectionModel}
 						onSortModelChange={handleSortModelChange}
 						onPaginationModelChange={handlePaginationModelChange}
 					/>

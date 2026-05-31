@@ -16,4 +16,7 @@ export const transactionService = {
 	delete(id: number): Promise<MessageResponse> {
 		return http.delete<MessageResponse>(joinPath(rootPath, 'bulk-delete'), { params: { id } });
 	},
+	bulkDelete(ids: string[]): Promise<MessageResponse> {
+		return http.delete<MessageResponse>(joinPath(rootPath, 'bulk-delete'), { params: { id: ids.join(',') } });
+	},
 };
